@@ -10,5 +10,5 @@ data class PostEntity(
     val title: String,
     val body: String,
     val tags: List<String>,
-    val updatedAt: String,
+    val updatedAt: String?,
 )
