@@ -1,5 +1,6 @@
 package com.example.taskboard.di
 
+import com.example.taskboard.core.TokenProvider
 import com.example.taskboard.data.api.AuthApi
 import com.example.taskboard.data.api.PostApi
 import com.example.taskboard.data.api.ProfileApi

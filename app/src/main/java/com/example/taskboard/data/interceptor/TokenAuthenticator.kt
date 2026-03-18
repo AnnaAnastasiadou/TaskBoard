@@ -12,7 +12,6 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class TokenAuthenticator @Inject constructor(
-    private val tokenProvider: TokenProvider,
     private val sessionManager: SessionManager,
     private val authApi: Provider<AuthApi>
 ) : Authenticator {

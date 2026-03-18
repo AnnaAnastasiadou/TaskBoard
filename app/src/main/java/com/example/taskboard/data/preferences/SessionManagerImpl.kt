@@ -12,7 +12,6 @@ class SessionManagerImpl @Inject constructor(@ApplicationContext context: Contex
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
-        private const val KEY_USER_ID = "user_id"
     }
 
     override fun setTokens(accessToken: String, refreshToken: String) {

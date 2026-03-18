@@ -21,7 +21,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val _isLoggedIn = MutableStateFlow(isUserLoggedIn())
     override val isLoggedIn = _isLoggedIn.asStateFlow()
 
-    override suspend fun login(username: String, password: String): NetworkResult<LoginResponse> =
+    override suspend fun logIn(username: String, password: String): NetworkResult<LoginResponse> =
         withContext(Dispatchers.IO) {
             val result = safeCall { authApi.login(request = LoginRequest(username, password)) }
 
