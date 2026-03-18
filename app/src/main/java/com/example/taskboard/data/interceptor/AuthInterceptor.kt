@@ -9,7 +9,7 @@ class AuthInterceptor @Inject constructor(
     private val sessionManager: SessionManager
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = sessionManager.getToken()
+        val token = sessionManager.getAccessToken()
 
         val request = if (token.isNullOrBlank()) {
             chain.request()

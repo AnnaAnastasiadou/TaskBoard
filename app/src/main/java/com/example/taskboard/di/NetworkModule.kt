@@ -5,6 +5,7 @@ import com.example.taskboard.data.api.PostApi
 import com.example.taskboard.data.api.ProfileApi
 import com.example.taskboard.data.api.TodoApi
 import com.example.taskboard.data.interceptor.AuthInterceptor
+import com.example.taskboard.data.interceptor.TokenAuthenticator
 import com.example.taskboard.data.preferences.SessionManager
 import dagger.Module
 import dagger.Provides
@@ -27,15 +28,11 @@ class NetworkModule {
     }
 
     @Provides
-    @Singleton
-    fun provideAuthInterceptor(sessionManager: SessionManager): AuthInterceptor =
-        AuthInterceptor(sessionManager)
-
-    @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, authInterceptor: AuthInterceptor, tokenAuthenticator: TokenAuthenticator): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .authenticator(tokenAuthenticator)
             .build()
     }
 

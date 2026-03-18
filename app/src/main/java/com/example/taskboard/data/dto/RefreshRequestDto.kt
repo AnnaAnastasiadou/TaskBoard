@@ -1,6 +1,5 @@
 package com.example.taskboard.data.dto
 
-data class LoginResponse(
-    val accessToken: String,
+data class RefreshRequestDto(
     val refreshToken: String
 )
