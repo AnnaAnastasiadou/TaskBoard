@@ -15,8 +15,8 @@ class LauncherViewModel @Inject constructor(private val authRepository: AuthRepo
     val uiState: StateFlow<LauncherUiState> = authRepository.isLoggedIn.map { loggedIn ->
         LauncherUiState(loggedIn, false)
     }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
+        scope = viewModelScope,
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = LauncherUiState(authRepository.isLoggedIn.value, true)
     )
 }

@@ -19,10 +19,10 @@ class LoginViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
     fun logIn(username: String, password: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, isLoggedIn = false) }
             when (val result = authRepository.logIn(username, password)) {
-                is NetworkResult.Success -> _uiState.update { it.copy(isLoading = false, error = null) }
-                is NetworkResult.Error -> _uiState.update { it.copy(isLoading = false, error = result.message) }
+                is NetworkResult.Success -> _uiState.update { it.copy(isLoading = false, error = null, isLoggedIn = true) }
+                is NetworkResult.Error -> _uiState.update { it.copy(isLoading = false, error = result.message, isLoggedIn = false) }
             }
         }
     }
