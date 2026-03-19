@@ -1,4 +1,4 @@
-package com.example.taskboard.data.dto
+package com.example.taskboard.data.remote.dto
 
 import androidx.room.PrimaryKey
 

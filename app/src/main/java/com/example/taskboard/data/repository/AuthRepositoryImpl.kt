@@ -1,11 +1,12 @@
 package com.example.taskboard.data.repository
 
 import com.example.taskboard.core.TokenProvider
-import com.example.taskboard.data.api.AuthApi
-import com.example.taskboard.data.dto.LoginRequest
-import com.example.taskboard.data.dto.LoginResponse
-import com.example.taskboard.data.preferences.SessionManager
+import com.example.taskboard.data.remote.api.AuthApi
+import com.example.taskboard.data.remote.dto.LoginRequest
+import com.example.taskboard.data.remote.dto.LoginResponse
+import com.example.taskboard.data.local.preferences.SharedPreferencesDatasource
 import com.example.taskboard.data.remote.NetworkResult
+import com.example.taskboard.data.remote.dto.RefreshRequestDto
 import com.example.taskboard.domain.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,41 +16,66 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
-    private val sessionManager: SessionManager,
+    private val sharedPreferencesDatasource: SharedPreferencesDatasource,
     private val tokenProvider: TokenProvider
 ) : AuthRepository {
     private val _isLoggedIn = MutableStateFlow(isUserLoggedIn())
     override val isLoggedIn = _isLoggedIn.asStateFlow()
 
-    override suspend fun logIn(username: String, password: String): NetworkResult<LoginResponse> =
-        withContext(Dispatchers.IO) {
-            val result = safeCall { authApi.login(request = LoginRequest(username, password)) }
+    override fun refreshAccessTokenSync(): String? {
+        val refreshToken = sharedPreferencesDatasource.getRefreshToken() ?: return null
 
-            if (result is NetworkResult.Success) {
-                val loginData = result.data
-                sessionManager.setTokens(loginData.accessToken, loginData.refreshToken)
-                tokenProvider.setAccessToken(loginData.accessToken)
-                _isLoggedIn.value = true
+        return try {
+            val response = authApi.refreshToken(RefreshRequestDto(refreshToken)).execute()
+
+            if (response.isSuccessful && response.body() != null) {
+                val newTokens = response.body()!!
+
+                sharedPreferencesDatasource.setTokens(newTokens.accessToken, newTokens.refreshToken)
+                tokenProvider.setAccessToken(newTokens.accessToken)
+                newTokens.accessToken
+            } else {
+                null
             }
-            result
+
+        } catch (e: Exception) {
+            null
         }
+    }
+
+    override suspend fun logIn(
+        username: String, password: String
+    ): NetworkResult<LoginResponse> = withContext(Dispatchers.IO) {
+        val result = safeCall { authApi.login(request = LoginRequest(username, password)) }
+
+        if (result is NetworkResult.Success) {
+            val loginData = result.data
+            sharedPreferencesDatasource.setTokens(loginData.accessToken, loginData.refreshToken)
+            tokenProvider.setAccessToken(loginData.accessToken)
+            _isLoggedIn.value = true
+        }
+        result
+    }
 
 
     override suspend fun logout() = withContext(Dispatchers.IO) {
-        sessionManager.clearTokens()
+        sharedPreferencesDatasource.clearTokens()
         tokenProvider.clearAccessToken()
         _isLoggedIn.value = false
     }
 
     override fun isUserLoggedIn(): Boolean {
-        var token = tokenProvider.getAccessToken()
-        if (token == null) {
-            sessionManager.getAccessToken()?.let {
-                token = it
-                tokenProvider.setAccessToken(token)
-            }
+        val cachedToken = tokenProvider.getAccessToken()
+        if (cachedToken != null) return true
+
+        val persistedAccessToken = sharedPreferencesDatasource.getAccessToken()
+        if (persistedAccessToken != null) {
+            tokenProvider.setAccessToken(persistedAccessToken)
+            return true
         }
-        return token != null
+
+        // If refresh token expires then
+        return sharedPreferencesDatasource.getRefreshToken() != null
     }
 
 }

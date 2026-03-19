@@ -1,12 +1,11 @@
-package com.example.taskboard.data.dao
+package com.example.taskboard.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.taskboard.data.entity.PostEntity
-import com.example.taskboard.data.entity.TodoEntity
+import com.example.taskboard.data.local.entity.TodoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

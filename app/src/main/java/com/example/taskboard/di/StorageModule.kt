@@ -2,8 +2,8 @@ package com.example.taskboard.di
 
 import com.example.taskboard.core.TokenProvider
 import com.example.taskboard.core.TokenProviderImpl
-import com.example.taskboard.data.preferences.SessionManager
-import com.example.taskboard.data.preferences.SessionManagerImpl
+import com.example.taskboard.data.local.preferences.SharedPreferencesDatasource
+import com.example.taskboard.data.local.preferences.SharedPreferencesDatasourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 abstract class StorageModule {
     @Binds
     @Singleton
-    abstract fun bindSessionManager(sessionManagerImpl: SessionManagerImpl): SessionManager
+    abstract fun bindSessionManager(sharedPreferencesDatasourceImpl: SharedPreferencesDatasourceImpl): SharedPreferencesDatasource
 
     @Binds
     @Singleton

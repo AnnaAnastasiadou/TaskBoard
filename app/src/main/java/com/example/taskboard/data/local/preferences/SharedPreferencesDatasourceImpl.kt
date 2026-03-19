@@ -1,12 +1,12 @@
-package com.example.taskboard.data.preferences
+package com.example.taskboard.data.local.preferences
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import androidx.core.content.edit
 
-class SessionManagerImpl @Inject constructor(@ApplicationContext context: Context) :
-    SessionManager {
+class SharedPreferencesDatasourceImpl @Inject constructor(@ApplicationContext context: Context) :
+    SharedPreferencesDatasource {
     private val preferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     companion object {

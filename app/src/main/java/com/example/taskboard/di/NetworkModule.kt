@@ -1,13 +1,11 @@
 package com.example.taskboard.di
 
-import com.example.taskboard.core.TokenProvider
-import com.example.taskboard.data.api.AuthApi
-import com.example.taskboard.data.api.PostApi
-import com.example.taskboard.data.api.ProfileApi
-import com.example.taskboard.data.api.TodoApi
-import com.example.taskboard.data.interceptor.AuthInterceptor
-import com.example.taskboard.data.interceptor.TokenAuthenticator
-import com.example.taskboard.data.preferences.SessionManager
+import com.example.taskboard.data.remote.api.AuthApi
+import com.example.taskboard.data.remote.api.PostApi
+import com.example.taskboard.data.remote.api.ProfileApi
+import com.example.taskboard.data.remote.api.TodoApi
+import com.example.taskboard.data.remote.interceptor.AuthInterceptor
+import com.example.taskboard.data.remote.interceptor.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +26,7 @@ class NetworkModule {
         }
     }
 
+    @Singleton
     @Provides
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, authInterceptor: AuthInterceptor, tokenAuthenticator: TokenAuthenticator): OkHttpClient {
         return OkHttpClient.Builder()

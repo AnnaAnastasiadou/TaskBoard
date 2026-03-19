@@ -1,4 +1,4 @@
-package com.example.taskboard.data.entity
+package com.example.taskboard.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

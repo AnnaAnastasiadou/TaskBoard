@@ -1,4 +1,4 @@
-package com.example.taskboard.data.dto
+package com.example.taskboard.data.remote.dto
 
 data class LoginResponse(
     val accessToken: String,

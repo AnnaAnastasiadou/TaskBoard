@@ -2,9 +2,9 @@ package com.example.taskboard.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.taskboard.data.dao.PostDao
-import com.example.taskboard.data.dao.TodoDao
-import com.example.taskboard.data.dao.UserDao
+import com.example.taskboard.data.local.dao.PostDao
+import com.example.taskboard.data.local.dao.TodoDao
+import com.example.taskboard.data.local.dao.UserDao
 import com.example.taskboard.data.local.database.TaskBoardDatabase
 import dagger.Module
 import dagger.Provides

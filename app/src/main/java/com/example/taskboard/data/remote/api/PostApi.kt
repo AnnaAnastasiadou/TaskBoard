@@ -1,6 +1,6 @@
-package com.example.taskboard.data.api
+package com.example.taskboard.data.remote.api
 
-import com.example.taskboard.data.dto.PostDto
+import com.example.taskboard.data.remote.dto.PostDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

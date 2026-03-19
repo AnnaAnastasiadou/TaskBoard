@@ -1,9 +1,9 @@
-package com.example.taskboard.data.api
+package com.example.taskboard.data.remote.api
 
-import com.example.taskboard.data.dto.LoginRequest
-import com.example.taskboard.data.dto.LoginResponse
-import com.example.taskboard.data.dto.RefreshRequestDto
-import com.example.taskboard.data.dto.RefreshResponseDto
+import com.example.taskboard.data.remote.dto.LoginRequest
+import com.example.taskboard.data.remote.dto.LoginResponse
+import com.example.taskboard.data.remote.dto.RefreshRequestDto
+import com.example.taskboard.data.remote.dto.RefreshResponseDto
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body

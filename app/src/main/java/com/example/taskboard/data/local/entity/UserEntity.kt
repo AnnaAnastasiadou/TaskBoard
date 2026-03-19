@@ -1,9 +1,11 @@
-package com.example.taskboard.data.dto
+package com.example.taskboard.data.local.entity
 
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-data class UserDto(
-    val id: Int,
+@Entity(tableName = "users")
+data class UserEntity(
+    @PrimaryKey val id: Int,
     val username: String,
     val firstName: String,
     val lastName: String,

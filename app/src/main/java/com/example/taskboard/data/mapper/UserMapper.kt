@@ -1,7 +1,7 @@
 package com.example.taskboard.data.mapper
 
-import com.example.taskboard.data.dto.UserDto
-import com.example.taskboard.data.entity.UserEntity
+import com.example.taskboard.data.remote.dto.UserDto
+import com.example.taskboard.data.local.entity.UserEntity
 
 fun UserDto.toEntity() : UserEntity {
     return UserEntity(

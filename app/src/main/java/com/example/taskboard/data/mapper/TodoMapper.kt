@@ -1,7 +1,7 @@
 package com.example.taskboard.data.mapper
 
-import com.example.taskboard.data.dto.TodoDto
-import com.example.taskboard.data.entity.TodoEntity
+import com.example.taskboard.data.remote.dto.TodoDto
+import com.example.taskboard.data.local.entity.TodoEntity
 
 fun TodoDto.toEntity(lastUpdated: String? = null): TodoEntity {
     return TodoEntity(
