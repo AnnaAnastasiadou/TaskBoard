@@ -1,8 +1,7 @@
-package com.example.taskboard.presentation.main
+package com.example.taskboard.presentation.launcher
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskboard.presentation.main.RootUiState
 import com.example.taskboard.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,12 +11,12 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class RootViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
-    val uiState: StateFlow<RootUiState> = authRepository.isLoggedIn.map { loggedIn ->
-        RootUiState(loggedIn)
+class LauncherViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
+    val uiState: StateFlow<LauncherUiState> = authRepository.isLoggedIn.map { loggedIn ->
+        LauncherUiState(loggedIn, false)
     }.stateIn(
         viewModelScope,
         SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = RootUiState(authRepository.isLoggedIn.value)
+        initialValue = LauncherUiState(authRepository.isLoggedIn.value, true)
     )
 }
