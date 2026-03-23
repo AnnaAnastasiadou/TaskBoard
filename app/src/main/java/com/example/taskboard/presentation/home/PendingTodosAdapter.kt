@@ -31,7 +31,7 @@ class PendingTodosAdapter(
         parent: ViewGroup,
         viewType: Int
     ): PendingTodosViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_pending_todos, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
         return PendingTodosViewHolder(view)
     }
 

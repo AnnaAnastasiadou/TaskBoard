@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_recent_post"
+            tools:listitem="@layout/item_post"
             tools:itemCount="2"/>
 
         <Button
@@ -95,7 +95,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_pending_todos" />
+            tools:listitem="@layout/item_todo" />
 
         <Button
             android:id="@+id/btn_all_todos"

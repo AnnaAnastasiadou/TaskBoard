@@ -28,7 +28,7 @@ class RecentPostsAdapter(
         parent: ViewGroup,
         viewType: Int
     ): RecentPostsViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recent_post, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
         return RecentPostsViewHolder(view)
     }
 

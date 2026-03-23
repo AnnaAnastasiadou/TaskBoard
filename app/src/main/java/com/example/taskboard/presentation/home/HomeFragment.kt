@@ -3,12 +3,14 @@ package com.example.taskboard.presentation.home
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.taskboard.R
 import com.example.taskboard.databinding.HomeFragmentBinding
 import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.model.Todo
 
 class HomeFragment: Fragment(R.layout.home_fragment) {
+    private val viewModel: HomeViewModel by viewModels()
     private var _binding : HomeFragmentBinding? = null
     private val binding get() = _binding!!
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
