@@ -10,6 +10,8 @@ fun PostDto.toEntity(lastUpdatedAt: Long? = null): PostEntity {
         title = title,
         body = body,
         tags = tags,
-        updatedAt = lastUpdatedAt
+        updatedAt = lastUpdatedAt,
+        likes = reactions.likes,
+        dislikes = reactions.dislikes
     )
 }

@@ -11,4 +11,6 @@ data class PostEntity(
     val body: String,
     val tags: List<String>,
     val updatedAt: Long?,
+    val likes: Int,
+    val dislikes: Int
 )

@@ -28,12 +28,6 @@
             android:layout_marginTop="12dp"
             app:chipSpacingHorizontal="8dp"
             app:chipSpacingVertical="4dp">
-
-            <com.google.android.material.chip.Chip
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sample Tag" />
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
@@ -43,7 +37,7 @@
             android:layout_margin="4dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorSecondary"
-            tools:text="This is a long body lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum" />
+            tools:text="This is the body of the post" />
 
         <View
             android:layout_width="match_parent"
@@ -81,7 +75,7 @@
                 app:tint="?attr/colorTertiary" />
 
             <TextView
-                android:id="@+id/tv_likes"
+                android:id="@+id/tv_dislikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -95,14 +89,23 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/tv_updated_at"
+                android:id="@+id/tv_edited"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Updated at"
                 android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                android:textColor="?attr/colorOutline"
-                android:textStyle="italic"
-                tools:text="Edited at 12:34" />
+                android:textColor="?attr/colorSecondary"
+                android:textStyle="italic" />
 
+            <TextView
+                android:id="@+id/updated_at"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                android:textColor="?attr/colorSecondary"
+                android:textStyle="italic"
+                tools:text="12:34" />
         </LinearLayout>
 
     </LinearLayout>

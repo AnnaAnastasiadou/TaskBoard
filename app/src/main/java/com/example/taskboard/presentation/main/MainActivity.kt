@@ -43,7 +43,7 @@ sealed class Screen(val tag: String) {
         }
 
         if(savedInstanceState == null) {
-            switchFragment(Screen.Home)
+            switchFragment(Screen.Posts)
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->

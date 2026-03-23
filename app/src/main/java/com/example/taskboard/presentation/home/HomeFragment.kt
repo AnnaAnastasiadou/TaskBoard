@@ -39,7 +39,9 @@ private fun getDummyPosts(): List<Post> {
             title = "Mastering ConstraintLayout",
             body = "Learning how to anchor views to the top and bottom bars is key to a solid UI...",
             tags = listOf("Android", "UI"),
-            updatedAt = "2026-03-20"
+            updatedAt = "2026-03-20".toLong(),
+            likes = 1,
+            dislikes = 4
         ),
         Post(
             id = 2,
@@ -47,7 +49,9 @@ private fun getDummyPosts(): List<Post> {
             title = "The Power of RecyclerView",
             body = "Adapters and ViewHolders allow us to display long lists efficiently by recycling views...",
             tags = listOf("Kotlin", "Performance"),
-            updatedAt = "2026-03-19"
+            updatedAt = "2026-03-19".toLong(),
+            likes = 45,
+            dislikes = 1
         )
     )
 }

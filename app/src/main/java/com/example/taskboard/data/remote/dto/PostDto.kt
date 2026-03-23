@@ -8,4 +8,5 @@ data class PostDto(
     val title: String,
     val body: String,
     val tags: List<String>,
+    val reactions: ReactionsDto
 )
