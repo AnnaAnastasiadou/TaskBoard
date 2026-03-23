@@ -14,7 +14,7 @@ interface TodoApi {
     suspend fun getTodos(): Response<List<TodoDto>>
 
     @GET("todos/{id}")
-    suspend fun getTodoById(@Path("id") id: Int) : Response<List<TodoDto>>
+    suspend fun getTodoById(@Path("id") id: Int) : Response<TodoDto>
 
     @POST("todos/add")
     suspend fun addTodo(@Body todo: TodoDto) : Response<TodoDto>

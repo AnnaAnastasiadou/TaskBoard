@@ -2,6 +2,9 @@ package com.example.taskboard.presentation.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.example.taskboard.R
 import com.example.taskboard.databinding.ActivityMainBinding
@@ -41,6 +44,12 @@ sealed class Screen(val tag: String) {
 
         if(savedInstanceState == null) {
             switchFragment(Screen.Home)
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(top = systemBars.top)
+            insets
         }
     }
 

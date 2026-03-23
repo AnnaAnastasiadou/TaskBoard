@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
                         snackBar.show()
                         viewModel.clearError()
                     }
-                    if (state.isLoading) {
+                    if (state.isLoggedIn) {
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()
                     }

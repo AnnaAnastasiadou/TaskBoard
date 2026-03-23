@@ -14,7 +14,7 @@ interface PostApi {
     suspend fun getPosts(): Response<List<PostDto>>
 
     @GET("posts/{id}")
-    suspend fun getPostById(@Path("id") id: Int) : Response<List<PostDto>>
+    suspend fun getPostById(@Path("id") id: Int) : Response<PostDto>
 
     @POST("posts/add")
     suspend fun addPost(@Body post: PostDto) : Response<PostDto>

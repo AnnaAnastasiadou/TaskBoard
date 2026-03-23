@@ -9,5 +9,5 @@ data class TodoEntity (
     val userId: Int,
     val todo: String,
     val completed: Boolean,
-    val updatedAt: String?
+    val updatedAt: Long?
 )

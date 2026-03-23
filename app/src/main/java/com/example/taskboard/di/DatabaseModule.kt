@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.taskboard.data.local.dao.PostDao
 import com.example.taskboard.data.local.dao.TodoDao
-import com.example.taskboard.data.local.dao.UserDao
+import com.example.taskboard.data.local.dao.ProfileDao
 import com.example.taskboard.data.local.database.TaskBoardDatabase
 import dagger.Module
 import dagger.Provides
@@ -34,5 +34,5 @@ object DatabaseModule {
     fun provideTodoDao(database: TaskBoardDatabase): TodoDao = database.todoDao()
 
     @Provides
-    fun provideUserDao(database: TaskBoardDatabase): UserDao = database.userDao()
+    fun provideUserDao(database: TaskBoardDatabase): ProfileDao = database.profileDao()
 }

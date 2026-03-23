@@ -15,7 +15,7 @@ interface TodoDao {
     suspend fun insertTodos(todos: List<TodoEntity>)
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertTodo(todo: TodoEntity)
+    suspend fun addTodo(todo: TodoEntity)
 
     // READ
     @Query("SELECT * FROM todos")
