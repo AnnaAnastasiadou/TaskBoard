@@ -31,10 +31,14 @@ class PostsAdapter(
             likesText.text = post.likes.toString()
             dislikesText.text = post.dislikes.toString()
 
+            tagGroup.removeAllViews()
+
             post.tags.forEach {tag ->
                 val chip = Chip(itemView.context).apply {
                     text = tag
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelSmall)
+                    isClickable = false
+                    isCheckable = false
+                    isFocusable = false
                 }
                 tagGroup.addView(chip)
             }

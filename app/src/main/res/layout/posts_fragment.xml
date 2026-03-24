@@ -12,6 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_post"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="54dp"
+        tools:listitem="@layout/item_post" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/rv_posts" />
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/design_default_color_error"
+        app:layout_constraintTop_toTopOf="@id/rv_posts"
+        tools:text="Error"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

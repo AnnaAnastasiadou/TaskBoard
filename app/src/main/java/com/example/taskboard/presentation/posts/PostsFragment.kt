@@ -1,22 +1,58 @@
 package com.example.taskboard.presentation.posts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 import com.example.taskboard.databinding.PostsFragmentBinding
 import com.example.taskboard.domain.model.Post
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class PostsFragment : Fragment(R.layout.posts_fragment) {
+    private val viewModel: PostsViewModel by viewModels()
     private var _binding: PostsFragmentBinding? = null
     private val binding get() = _binding!!
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = PostsFragmentBinding.bind(view)
-        val adapter = PostsAdapter(dummyList, {})
+
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = "Home"
+
+        val adapter = PostsAdapter(emptyList(), {})
         binding.rvPosts.adapter = adapter
+
+        binding.rvPosts.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+                viewModel.onScrollReachedIndex(lastVisiblePosition)
+            }
+        })
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    state.data?.let{
+                        adapter.updateData(newPostsList = state.data)
+                    }
+                    binding.progressBar.isVisible = state.isLoading
+                    binding.tvError.isVisible = state.error != null
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

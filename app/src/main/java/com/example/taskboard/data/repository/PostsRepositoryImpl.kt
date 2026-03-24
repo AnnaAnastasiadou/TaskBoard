@@ -6,6 +6,7 @@ import com.example.taskboard.data.mapper.toEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.data.remote.api.PostApi
 import com.example.taskboard.data.remote.dto.PostDto
+import com.example.taskboard.data.remote.response.PostResponse
 import com.example.taskboard.domain.repository.PostsRepository
 import com.example.taskboard.presentation.getCurrentDate
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,13 @@ class PostsRepositoryImpl @Inject constructor(
 ) : PostsRepository {
     override fun getAllPosts(): Flow<List<PostEntity>?> = postDao.getPosts()
 
-    override suspend fun refreshPosts() = safeCall { postApi.getPosts() }
+    override suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse> {
+        val result = safeCall { postApi.getPosts(limit, skip) }
+        if (result is NetworkResult.Success) {
+            postDao.insertPosts(result.data.posts.map { it.toEntity() })
+        }
+        return result
+    }
 
     override suspend fun getPostById(id: Int): NetworkResult<PostDto> =
         safeCall { postApi.getPostById(id) }

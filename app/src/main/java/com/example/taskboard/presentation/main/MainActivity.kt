@@ -30,6 +30,7 @@ sealed class Screen(val tag: String) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+        setSupportActionBar(binding.topBar)
         setContentView(binding.root)
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
