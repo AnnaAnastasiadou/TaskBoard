@@ -61,15 +61,12 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    val hasData = !state.data.isNullOrEmpty()
                     val errorMessage = state.error ?: state.networkError
-//                    binding.progressBar.isVisible = state.isLoading && !hasData
 
                     postsAdapter.updateData(newPostsList = state.data ?: emptyList())
 
-
                     when {
-                        state.isLoading == true -> listLoadStateAdapter.setState(ListLoadState.Loading)
+                        state.isLoading -> listLoadStateAdapter.setState(ListLoadState.Loading)
                         errorMessage != null -> listLoadStateAdapter.setState(
                             ListLoadState.Error(
                                 errorMessage
