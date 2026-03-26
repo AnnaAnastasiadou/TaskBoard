@@ -33,9 +33,9 @@ suspend fun <T>safeCall(call: suspend () -> Response<T>): NetworkResult<T> {
             NetworkResult.Error(message)
         }
     } catch (e: ConnectException) {
-        NetworkResult.Error(message = "Unable to reach server")
+        NetworkResult.NetworkError(message = "Unable to reach server")
     } catch (e: UnknownHostException) {
-        NetworkResult.Error(message = "No internet connection")
+        NetworkResult.NetworkError(message = "No internet connection")
     } catch (e: HttpException) {
         NetworkResult.Error(message = "HTTP ${e.code()}: ${e.message}")
     }

@@ -8,6 +8,7 @@ import com.example.taskboard.R
 import com.example.taskboard.databinding.HomeFragmentBinding
 import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.model.Todo
+import com.example.taskboard.presentation.common.getCurrentDate
 
 class HomeFragment: Fragment(R.layout.home_fragment) {
     private val viewModel: HomeViewModel by viewModels()
@@ -39,7 +40,7 @@ private fun getDummyPosts(): List<Post> {
             title = "Mastering ConstraintLayout",
             body = "Learning how to anchor views to the top and bottom bars is key to a solid UI...",
             tags = listOf("Android", "UI"),
-            updatedAt = "2026-03-20".toLong(),
+            updatedAt = getCurrentDate(),
             likes = 1,
             dislikes = 4
         ),
@@ -49,7 +50,7 @@ private fun getDummyPosts(): List<Post> {
             title = "The Power of RecyclerView",
             body = "Adapters and ViewHolders allow us to display long lists efficiently by recycling views...",
             tags = listOf("Kotlin", "Performance"),
-            updatedAt = "2026-03-19".toLong(),
+            updatedAt = getCurrentDate(),
             likes = 45,
             dislikes = 1
         )

@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 import com.example.taskboard.domain.model.Post
-import com.example.taskboard.presentation.formatDateTime
+import com.example.taskboard.presentation.common.formatDateTime
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 

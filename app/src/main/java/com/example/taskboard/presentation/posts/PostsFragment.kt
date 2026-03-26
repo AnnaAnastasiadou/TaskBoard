@@ -10,12 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 import com.example.taskboard.databinding.PostsFragmentBinding
 import com.example.taskboard.domain.model.Post
+import com.example.taskboard.presentation.common.ListLoadState
+import com.example.taskboard.presentation.common.ListLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -23,17 +27,27 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
     private val viewModel: PostsViewModel by viewModels()
     private var _binding: PostsFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var postsAdapter: PostsAdapter
+    private lateinit var listLoadStateAdapter: ListLoadStateAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = PostsFragmentBinding.bind(view)
 
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = "Home"
+        setUpRecyclerView()
+        observeUiState()
+    }
 
-        val adapter = PostsAdapter(emptyList(), {})
-        binding.rvPosts.adapter = adapter
+    private fun setUpRecyclerView() {
+        postsAdapter = PostsAdapter(emptyList(), {})
 
-        binding.rvPosts.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        listLoadStateAdapter = ListLoadStateAdapter()
+
+        binding.rvPosts.adapter = ConcatAdapter(postsAdapter, listLoadStateAdapter)
+
+        binding.rvPosts.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -41,19 +55,36 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
                 viewModel.onScrollReachedIndex(lastVisiblePosition)
             }
         })
+    }
 
+    private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    state.data?.let{
-                        adapter.updateData(newPostsList = state.data)
+                    val hasData = !state.data.isNullOrEmpty()
+                    val errorMessage = state.error ?: state.networkError
+//                    binding.progressBar.isVisible = state.isLoading && !hasData
+
+                    postsAdapter.updateData(newPostsList = state.data ?: emptyList())
+
+
+                    when {
+                        state.isLoading == true -> listLoadStateAdapter.setState(ListLoadState.Loading)
+                        errorMessage != null -> listLoadStateAdapter.setState(
+                            ListLoadState.Error(
+                                errorMessage
+                            )
+                        )
+                        else -> {
+                            listLoadStateAdapter.setState(ListLoadState.Hidden)
+                        }
                     }
-                    binding.progressBar.isVisible = state.isLoading
-                    binding.tvError.isVisible = state.error != null
+
                 }
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -71,8 +102,7 @@ val dummyList = listOf(
         dislikes = 2,
         userId = 1,
         updatedAt = System.currentTimeMillis(),
-    ),
-    Post(
+    ), Post(
         id = 2,
         title = "The Magic of Material3 Chips",
         body = "Chips are compact elements that represent an attribute or action. They look great in a ChipGroup.",
@@ -81,8 +111,7 @@ val dummyList = listOf(
         dislikes = 0,
         userId = 2,
         updatedAt = null,
-    ),
-    Post(
+    ), Post(
         id = 3,
         title = "Quick Tips for Clean Code",
         body = "Keep your fragments lean and your adapters smart. Logic belongs in the ViewModel!",

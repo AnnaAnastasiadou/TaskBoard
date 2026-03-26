@@ -6,13 +6,8 @@ import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.repository.PostsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +18,7 @@ class PostsViewModel @Inject constructor(
     private val postsRepository: PostsRepository
 ) : ViewModel() {
 
-    val _uiState = MutableStateFlow(PostsUiState(isLoading = true))
+    private val _uiState = MutableStateFlow(PostsUiState(isLoading = true))
     val uiState = _uiState.asStateFlow()
 
     private var currentSkip = 0
@@ -52,13 +47,31 @@ class PostsViewModel @Inject constructor(
 
             when (val result = postsRepository.refreshPosts(30, currentSkip)) {
                 is NetworkResult.Success -> {
-                    delay(5000)
                     currentSkip += pageSize
                     isFetching = false
-                    _uiState.update { it.copy(isLoading = false)}
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                            networkError = null
+                        )
+                    }
                 }
-                is NetworkResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.message) }
+
+                is NetworkResult.Error -> _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = result.message,
+                        networkError = null
+                    )
+                }
+
+                is NetworkResult.NetworkError -> _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = null,
+                        networkError = result.message
+                    )
                 }
             }
         }

@@ -16,13 +16,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-//    sealed class for possible navigation
-sealed class Screen(val tag: String) {
-    object Home : Screen("home_fragment")
-    object Posts : Screen("posts_fragment")
-    object Todos : Screen("todos_fragment")
-    object Profile : Screen("profile_fragment")
-}
+    //    sealed class for possible navigation
+    sealed class Screen(val tag: String, val title: String) {
+        object Posts : Screen("posts_fragment", "Posts")
+        object Todos : Screen("todos_fragment", "Todos")
+        object Profile : Screen("profile_fragment", "Profile")
+    }
+
     private lateinit var binding: ActivityMainBinding
     private var activeFragment: Fragment? = null
 
@@ -35,15 +35,26 @@ sealed class Screen(val tag: String) {
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> { true }
-                R.id.navigation_posts -> {true}
-                R.id.navigation_todos -> {true}
-                R.id.navigation_profile -> {true}
+                R.id.navigation_posts -> {
+                    switchFragment(Screen.Posts)
+                    true
+                }
+
+                R.id.navigation_todos -> {
+                    switchFragment(Screen.Todos)
+                    true
+                }
+
+                R.id.navigation_profile -> {
+                    switchFragment(Screen.Profile)
+                    true
+                }
+
                 else -> false
             }
         }
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             switchFragment(Screen.Posts)
         }
 
@@ -56,17 +67,19 @@ sealed class Screen(val tag: String) {
 
     fun switchFragment(screen: Screen) {
         val fragmentManager = supportFragmentManager
-        val targetFragment: Fragment = fragmentManager.findFragmentByTag(screen.tag) ?: when (screen) {
-            Screen.Home -> HomeFragment()
-            Screen.Posts -> PostsFragment()
-            Screen.Todos -> TodosFragment()
-            Screen.Profile -> ProfileFragment()
-        }
+        val targetFragment: Fragment =
+            fragmentManager.findFragmentByTag(screen.tag) ?: when (screen) {
+                Screen.Posts -> PostsFragment()
+                Screen.Todos -> TodosFragment()
+                Screen.Profile -> ProfileFragment()
+            }
+
+        supportActionBar?.title = screen.title
 
         val transaction = fragmentManager.beginTransaction()
-        activeFragment?.let {transaction.hide(it)}
+        activeFragment?.let { transaction.hide(it) }
 
-        if(!targetFragment.isAdded) {
+        if (!targetFragment.isAdded) {
             transaction.add(R.id.fragment_container, targetFragment, screen.tag)
         } else {
             transaction.show(targetFragment)

@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation
+package com.example.taskboard.presentation.common
 
 import java.text.SimpleDateFormat
 import java.util.Date

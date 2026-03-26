@@ -8,7 +8,7 @@ import com.example.taskboard.data.remote.api.PostApi
 import com.example.taskboard.data.remote.dto.PostDto
 import com.example.taskboard.data.remote.response.PostResponse
 import com.example.taskboard.domain.repository.PostsRepository
-import com.example.taskboard.presentation.getCurrentDate
+import com.example.taskboard.presentation.common.getCurrentDate
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

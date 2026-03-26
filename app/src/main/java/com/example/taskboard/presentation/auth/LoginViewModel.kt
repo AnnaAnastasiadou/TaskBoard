@@ -23,6 +23,7 @@ class LoginViewModel @Inject constructor(
             when (val result = authRepository.logIn(username, password)) {
                 is NetworkResult.Success -> _uiState.update { it.copy(isLoading = false, error = null, isLoggedIn = true) }
                 is NetworkResult.Error -> _uiState.update { it.copy(isLoading = false, error = result.message, isLoggedIn = false) }
+                is NetworkResult.NetworkError -> _uiState.update { it.copy(isLoading = false, error = null, isLoggedIn = false) }
             }
         }
     }
