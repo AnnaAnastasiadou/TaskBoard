@@ -39,16 +39,16 @@ class PostsRepositoryImpl @Inject constructor(
         return response
     }
 
-    override suspend fun deletePost(postId: Int) : NetworkResult<PostDto>  {
-        val response = safeCall{ postApi.deletePost(postId) }
+    override suspend fun deletePost(postId: Int): NetworkResult<PostDto> {
+        val response = safeCall { postApi.deletePost(postId) }
         if (response is NetworkResult.Success) {
             postDao.deletePost(postId)
         }
         return response
     }
 
-    override suspend fun addPost(post: PostDto) : NetworkResult<PostDto>  {
-        val response = safeCall{ postApi.addPost(post) }
+    override suspend fun addPost(post: PostDto): NetworkResult<PostDto> {
+        val response = safeCall { postApi.addPost(post) }
         if (response is NetworkResult.Success) {
             postDao.addPost(post.toEntity())
         }

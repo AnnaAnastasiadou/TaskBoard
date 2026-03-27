@@ -64,35 +64,35 @@ private fun getDummyTodos(): List<Todo> {
             userId = 1,
             todo = "Check the API documentation",
             completed = false,
-            updatedAt = "2026-03-20"
+            updatedAt = getCurrentDate()
         ),
         Todo(
             id = 2,
             userId = 1,
             todo = "Buy groceries for dinner",
             completed = false,
-            updatedAt = "2026-03-20"
+            updatedAt = getCurrentDate()
         ),
         Todo(
             id = 3,
             userId = 1,
             todo = "Call the bank regarding the loan",
             completed = true, // This one should be filtered out!
-            updatedAt = "2026-03-19"
+            updatedAt = getCurrentDate()
         ),
         Todo(
             id = 4,
             userId = 1,
             todo = "Send the weekly report to the manager",
             completed = false,
-            updatedAt = "2026-03-20"
+            updatedAt = getCurrentDate()
         ),
         Todo(
             id = 5,
             userId = 1,
             todo = "Clean the workspace",
             completed = false,
-            updatedAt = "2026-03-18"
+            updatedAt = getCurrentDate()
         )
     )
 }

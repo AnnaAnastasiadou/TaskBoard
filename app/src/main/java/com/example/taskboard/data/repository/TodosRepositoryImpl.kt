@@ -17,7 +17,8 @@ class TodosRepositoryImpl @Inject constructor(
 ) : TodosRepository {
     override fun getAllTodos(): Flow<List<TodoEntity>?> = todoDao.getTodos()
 
-    override suspend fun refreshAllTodos(): NetworkResult<List<TodoDto>> = safeCall { todoApi.getTodos() }
+    override suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<List<TodoDto>> =
+        safeCall { todoApi.getTodos(limit, skip) }
 
     override suspend fun getPostById(id: Int): NetworkResult<TodoDto> =
         safeCall { todoApi.getTodoById(id) }
@@ -33,16 +34,16 @@ class TodosRepositoryImpl @Inject constructor(
         return response
     }
 
-    override suspend fun deleteTodo(todoId: Int) : NetworkResult<TodoDto>  {
-        val response = safeCall{ todoApi.deleteTodo(todoId) }
+    override suspend fun deleteTodo(todoId: Int): NetworkResult<TodoDto> {
+        val response = safeCall { todoApi.deleteTodo(todoId) }
         if (response is NetworkResult.Success) {
             todoDao.deleteTodo(todoId)
         }
         return response
     }
 
-    override suspend fun addTodo(todo: TodoDto) : NetworkResult<TodoDto>  {
-        val response = safeCall{ todoApi.addTodo(todo) }
+    override suspend fun addTodo(todo: TodoDto): NetworkResult<TodoDto> {
+        val response = safeCall { todoApi.addTodo(todo) }
         if (response is NetworkResult.Success) {
             todoDao.addTodo(todo.toEntity())
         }
