@@ -1,10 +1,7 @@
 package com.example.taskboard.presentation.posts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -19,7 +16,6 @@ import com.example.taskboard.domain.model.Post
 import com.example.taskboard.presentation.common.ListLoadState
 import com.example.taskboard.presentation.common.ListLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,7 +39,7 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
     private fun setUpRecyclerView() {
         postsAdapter = PostsAdapter(emptyList(), {})
 
-        listLoadStateAdapter = ListLoadStateAdapter()
+        listLoadStateAdapter = ListLoadStateAdapter { viewModel.onRetry() }
 
         binding.rvPosts.adapter = ConcatAdapter(postsAdapter, listLoadStateAdapter)
 
@@ -61,27 +57,28 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    val errorMessage = state.error ?: state.networkError
-
                     postsAdapter.updateData(newPostsList = state.data ?: emptyList())
 
                     when {
                         state.isLoading -> listLoadStateAdapter.setState(ListLoadState.Loading)
-                        errorMessage != null -> listLoadStateAdapter.setState(
+                        state.error != null -> listLoadStateAdapter.setState(
                             ListLoadState.Error(
-                                errorMessage
+                                state.error
                             )
                         )
+
+                        state.networkError != null -> {
+                            listLoadStateAdapter.setState(ListLoadState.NetworkError(state.networkError))
+                        }
+
                         else -> {
                             listLoadStateAdapter.setState(ListLoadState.Hidden)
                         }
                     }
-
                 }
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

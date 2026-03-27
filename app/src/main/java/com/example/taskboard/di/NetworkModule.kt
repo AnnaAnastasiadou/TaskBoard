@@ -1,14 +1,17 @@
 package com.example.taskboard.di
 
+import android.content.Context
 import com.example.taskboard.data.remote.api.AuthApi
 import com.example.taskboard.data.remote.api.PostApi
 import com.example.taskboard.data.remote.api.ProfileApi
 import com.example.taskboard.data.remote.api.TodoApi
 import com.example.taskboard.data.remote.interceptor.AuthInterceptor
 import com.example.taskboard.data.remote.interceptor.TokenAuthenticator
+import com.example.taskboard.presentation.common.NetworkMonitor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,20 +31,20 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, authInterceptor: AuthInterceptor, tokenAuthenticator: TokenAuthenticator): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .addInterceptor(loggingInterceptor)
-            .authenticator(tokenAuthenticator)
-            .build()
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient {
+        return OkHttpClient.Builder().addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor).authenticator(tokenAuthenticator).build()
     }
 
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder().baseUrl("https://dummyjson.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient).build()
+            .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
     }
 
     @Singleton
@@ -59,4 +62,9 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideProfileApi(retrofit: Retrofit): ProfileApi = retrofit.create(ProfileApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideNetworkMonitor(@ApplicationContext context: Context): NetworkMonitor = NetworkMonitor(context)
+
 }

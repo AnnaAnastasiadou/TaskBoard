@@ -1,10 +1,12 @@
 package com.example.taskboard.presentation.posts
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.repository.PostsRepository
+import com.example.taskboard.presentation.common.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,8 @@ import kotlin.collections.emptyList
 
 @HiltViewModel
 class PostsViewModel @Inject constructor(
-    private val postsRepository: PostsRepository
+    private val postsRepository: PostsRepository,
+    private val networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PostsUiState(isLoading = true))
@@ -27,7 +30,19 @@ class PostsViewModel @Inject constructor(
 
     init {
         subscribeToPosts()
+        observeNetworkRecovery()
         loadNextBatch()
+    }
+
+    private fun observeNetworkRecovery() {
+        viewModelScope.launch {
+            networkMonitor.isOnline.collect { online ->
+                val hasNetworkError = _uiState.value.networkError != null
+                if (online && hasNetworkError) {
+                    loadNextBatch()
+                }
+            }
+        }
     }
 
     private fun subscribeToPosts() {
@@ -40,15 +55,15 @@ class PostsViewModel @Inject constructor(
     }
 
     private fun loadNextBatch() {
+        println("calling load batch")
         if (isFetching) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, error = null, networkError = null) }
             isFetching = true
 
             when (val result = postsRepository.refreshPosts(30, currentSkip)) {
                 is NetworkResult.Success -> {
                     currentSkip += pageSize
-                    isFetching = false
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -74,13 +89,20 @@ class PostsViewModel @Inject constructor(
                     )
                 }
             }
+            isFetching = false
+
         }
     }
 
     fun onScrollReachedIndex(index: Int) {
+        val hasError = uiState.value.error != null || uiState.value.networkError != null
         val totalItems = uiState.value.data?.size ?: 0
-        if (index >= totalItems - 1 && !isFetching) {
+        if (index >= totalItems - 5 && !isFetching && !hasError) {
             loadNextBatch()
         }
+    }
+
+    fun onRetry() {
+        loadNextBatch()
     }
 }

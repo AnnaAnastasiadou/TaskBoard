@@ -17,7 +17,6 @@ class PostsRepositoryImpl @Inject constructor(
     private val postDao: PostDao
 ) : PostsRepository {
     override fun getAllPosts(): Flow<List<PostEntity>?> = postDao.getPosts()
-
     override suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse> {
         val result = safeCall { postApi.getPosts(limit, skip) }
         if (result is NetworkResult.Success) {

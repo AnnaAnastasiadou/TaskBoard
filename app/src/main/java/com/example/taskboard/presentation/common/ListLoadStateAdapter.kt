@@ -3,12 +3,15 @@ package com.example.taskboard.presentation.common
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 
-class ListLoadStateAdapter : RecyclerView.Adapter<ListLoadStateAdapter.LoadStateViewHolder>() {
+class ListLoadStateAdapter(
+    private val onRetry: () -> Unit
+) : RecyclerView.Adapter<ListLoadStateAdapter.LoadStateViewHolder>() {
     private var state: ListLoadState = ListLoadState.Hidden
 
     fun setState(newState: ListLoadState) {
@@ -36,7 +39,7 @@ class ListLoadStateAdapter : RecyclerView.Adapter<ListLoadStateAdapter.LoadState
         holder: LoadStateViewHolder,
         position: Int
     ) {
-        holder.bind(state)
+        holder.bind(state, onRetry)
     }
 
     override fun getItemCount(): Int {
@@ -46,22 +49,36 @@ class ListLoadStateAdapter : RecyclerView.Adapter<ListLoadStateAdapter.LoadState
     class LoadStateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val progressBar = itemView.findViewById<ProgressBar>(R.id.progress_bar)
         private val errorText = itemView.findViewById<TextView>(R.id.tvError)
+        private val retryButton = itemView.findViewById<Button>(R.id.btn_retry)
 
-        fun bind(state: ListLoadState) {
+        fun bind(state: ListLoadState, onRetry: () -> Unit) {
             when(state) {
                 is ListLoadState.Loading -> {
                     progressBar.visibility = View.VISIBLE
-                    errorText.visibility= View.GONE
+                    errorText.visibility = View.GONE
+                    retryButton.visibility = View.GONE
                 }
                 is ListLoadState.Error -> {
                     progressBar.visibility = View.GONE
                     errorText.visibility= View.VISIBLE
                     errorText.text = state.message
+                    retryButton.visibility = View.VISIBLE
+
+                    retryButton.setOnClickListener { onRetry() }
                 }
-                ListLoadState.Hidden -> {
+                is ListLoadState.NetworkError -> {
+                    progressBar.visibility = View.GONE
+                    errorText.visibility= View.VISIBLE
+                    errorText.text = state.message
+                    retryButton.visibility = View.GONE
+                }
+
+                is ListLoadState.Hidden -> {
                     progressBar.visibility = View.GONE
                     errorText.visibility = View.GONE
+                    retryButton.visibility = View.GONE
                 }
+
             }
         }
     }
