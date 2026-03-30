@@ -8,7 +8,9 @@ import com.example.taskboard.domain.repository.TodosRepository
 import com.example.taskboard.presentation.common.NetworkMonitor
 import com.example.taskboard.presentation.common.pagination.BasePaginationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +20,8 @@ class TodosViewModel @Inject constructor(
     private val todosRepository: TodosRepository,
     networkMonitor: NetworkMonitor
 ) : BasePaginationViewModel<Todo>(networkMonitor) {
+    private val _errorChannel = Channel<String>()
+    val errorEvent = _errorChannel.receiveAsFlow()
     override val dataFlow = todosRepository.getAllTodos().map { entities ->
         entities?.map { it.toDomain() }
             ?: emptyList()
@@ -64,7 +68,12 @@ class TodosViewModel @Inject constructor(
 
     fun toggleTodoStatus(id: Int) {
         viewModelScope.launch {
-            todosRepository.toggleStatus(id)
+            when(val result = todosRepository.toggleStatus(id)) {
+                is NetworkResult.Success -> {}
+                is NetworkResult.Error -> _errorChannel.send(result.message)
+                is NetworkResult.NetworkError -> _errorChannel.send(result.message)
+            }
+
         }
     }
 

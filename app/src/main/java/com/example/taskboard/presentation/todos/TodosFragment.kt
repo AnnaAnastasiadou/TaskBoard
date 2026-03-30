@@ -16,6 +16,7 @@ import com.example.taskboard.databinding.PostsFragmentBinding
 import com.example.taskboard.databinding.TodosFragmentBinding
 import com.example.taskboard.presentation.common.ListLoadState
 import com.example.taskboard.presentation.common.ListLoadStateAdapter
+import com.example.taskboard.presentation.common.showErrorMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -61,6 +62,14 @@ class TodosFragment: Fragment(R.layout.todos_fragment) {
                         state.networkError != null -> listLoadStateAdapter.setState(ListLoadState.NetworkError(state.networkError))
                         else -> listLoadStateAdapter.setState(ListLoadState.Hidden)
                     }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { message ->
+                    showErrorMessage(binding.root, message)
                 }
             }
         }
