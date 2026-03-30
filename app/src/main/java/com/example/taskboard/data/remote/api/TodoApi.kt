@@ -1,6 +1,7 @@
 package com.example.taskboard.data.remote.api
 
 import com.example.taskboard.data.remote.dto.TodoDto
+import com.example.taskboard.data.remote.response.TodoResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -15,7 +16,7 @@ interface TodoApi {
     suspend fun getTodos(
         @Query("limit") limit: Int = 30,
         @Query("skip") skip: Int = 0
-    ): Response<List<TodoDto>>
+    ): Response<TodoResponse>
 
     @GET("todos/{id}")
     suspend fun getTodoById(@Path("id") id: Int): Response<TodoDto>

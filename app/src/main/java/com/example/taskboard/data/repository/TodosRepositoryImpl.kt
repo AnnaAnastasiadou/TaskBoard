@@ -6,6 +6,7 @@ import com.example.taskboard.data.mapper.toEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.data.remote.api.TodoApi
 import com.example.taskboard.data.remote.dto.TodoDto
+import com.example.taskboard.data.remote.response.TodoResponse
 import com.example.taskboard.domain.repository.TodosRepository
 import com.example.taskboard.presentation.common.getCurrentDate
 import kotlinx.coroutines.flow.Flow
@@ -17,8 +18,13 @@ class TodosRepositoryImpl @Inject constructor(
 ) : TodosRepository {
     override fun getAllTodos(): Flow<List<TodoEntity>?> = todoDao.getTodos()
 
-    override suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<List<TodoDto>> =
-        safeCall { todoApi.getTodos(limit, skip) }
+    override suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<TodoResponse> {
+        val result = safeCall { todoApi.getTodos(limit, skip) }
+        if (result is NetworkResult.Success) {
+            todoDao.insertTodos(result.data.todos.map{ it.toEntity()})
+        }
+        return result
+    }
 
     override suspend fun getPostById(id: Int): NetworkResult<TodoDto> =
         safeCall { todoApi.getTodoById(id) }
