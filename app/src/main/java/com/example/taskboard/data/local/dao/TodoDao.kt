@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TodoDao {
     // CREATE
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTodos(todos: List<TodoEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addTodo(todo: TodoEntity)
 
     // READ
@@ -22,7 +22,7 @@ interface TodoDao {
     fun getTodos(): Flow<List<TodoEntity>?>
 
     @Query("SELECT * FROM todos WHERE id = :todoId")
-    fun getTodoById(todoId: Int): Flow<TodoEntity?>
+    suspend fun getTodoById(todoId: Int): TodoEntity?
 
     // UPDATE
     @Update

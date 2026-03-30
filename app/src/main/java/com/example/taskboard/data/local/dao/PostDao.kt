@@ -20,7 +20,7 @@ interface PostDao {
     fun getPosts(): Flow<List<PostEntity>?>
 
     @Query("SELECT * FROM posts WHERE id = :postId")
-    fun getPostById(postId: Int): Flow<PostEntity?>
+    suspend fun getPostById(postId: Int): PostEntity?
 
     @Update
     suspend fun updatePost(post: PostEntity)

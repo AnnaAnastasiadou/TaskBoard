@@ -62,4 +62,10 @@ class TodosViewModel @Inject constructor(
         }
     }
 
+    fun toggleTodoStatus(id: Int) {
+        viewModelScope.launch {
+            todosRepository.toggleStatus(id)
+        }
+    }
+
 }

@@ -25,8 +25,7 @@ class PostsRepositoryImpl @Inject constructor(
         return result
     }
 
-    override suspend fun getPostById(id: Int): NetworkResult<PostDto> =
-        safeCall { postApi.getPostById(id) }
+    override suspend fun getPostById(id: Int): PostEntity? = postDao.getPostById(id)
 
     override suspend fun updatePost(id: Int, body: Map<String, Any>): NetworkResult<PostDto> {
         val response = safeCall { postApi.updatePost(id, body) }

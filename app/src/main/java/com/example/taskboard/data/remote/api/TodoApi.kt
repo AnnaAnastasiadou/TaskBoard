@@ -18,14 +18,11 @@ interface TodoApi {
         @Query("skip") skip: Int = 0
     ): Response<TodoResponse>
 
-    @GET("todos/{id}")
-    suspend fun getTodoById(@Path("id") id: Int): Response<TodoDto>
-
     @POST("todos/add")
     suspend fun addTodo(@Body todo: TodoDto): Response<TodoDto>
 
     @PATCH("todos/{id}")
-    suspend fun updateTodo(@Path("id") id: Int, @Body updates: Map<String, Any>): Response<TodoDto>
+    suspend fun updateTodo(@Path("id") id: Int, @Body updates: @JvmSuppressWildcards Map<String, Any>): Response<TodoDto>
 
     @DELETE("todos/{id}")
     suspend fun deleteTodo(@Path("id") id: Int): Response<TodoDto>

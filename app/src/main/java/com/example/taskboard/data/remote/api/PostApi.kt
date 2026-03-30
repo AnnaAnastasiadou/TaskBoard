@@ -18,14 +18,11 @@ interface PostApi {
         @Query("skip") skip: Int = 0
     ): Response<PostResponse>
 
-    @GET("posts/{id}")
-    suspend fun getPostById(@Path("id") id: Int) : Response<PostDto>
-
     @POST("posts/add")
     suspend fun addPost(@Body post: PostDto) : Response<PostDto>
 
     @PATCH("posts/{id}")
-    suspend fun updatePost(@Path("id") id: Int, @Body updates: Map<String, Any>) : Response<PostDto>
+    suspend fun updatePost(@Path("id") id: Int, @Body updates: @JvmSuppressWildcards Map<String, Any>) : Response<PostDto>
 
     @DELETE("posts/{id}")
     suspend fun deletePost(@Path("id") id: Int): Response<PostDto>

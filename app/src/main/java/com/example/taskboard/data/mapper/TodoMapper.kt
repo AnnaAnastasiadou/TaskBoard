@@ -12,3 +12,12 @@ fun TodoDto.toEntity(lastUpdated: Long? = null): TodoEntity {
         updatedAt = lastUpdated
     )
 }
+
+fun TodoEntity.toDto(): TodoDto {
+    return TodoDto(
+        id = id,
+        userId = userId,
+        todo = todo,
+        completed = completed,
+    )
+}

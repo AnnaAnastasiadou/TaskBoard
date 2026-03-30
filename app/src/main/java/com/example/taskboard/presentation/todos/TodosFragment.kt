@@ -35,7 +35,7 @@ class TodosFragment: Fragment(R.layout.todos_fragment) {
     }
 
     private fun setUpRecyclerView() {
-        todosAdapter = TodosAdapter(emptyList(), {})
+        todosAdapter = TodosAdapter(emptyList(), {}, { id -> viewModel.toggleTodoStatus(id) })
         listLoadStateAdapter = ListLoadStateAdapter { viewModel.onRetry() }
         binding.rvTodos.adapter = ConcatAdapter(todosAdapter, listLoadStateAdapter)
 

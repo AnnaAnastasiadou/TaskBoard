@@ -2,6 +2,7 @@ package com.example.taskboard.data.repository
 
 import com.example.taskboard.data.local.dao.TodoDao
 import com.example.taskboard.data.local.entity.TodoEntity
+import com.example.taskboard.data.mapper.toDto
 import com.example.taskboard.data.mapper.toEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.data.remote.api.TodoApi
@@ -26,8 +27,7 @@ class TodosRepositoryImpl @Inject constructor(
         return result
     }
 
-    override suspend fun getPostById(id: Int): NetworkResult<TodoDto> =
-        safeCall { todoApi.getTodoById(id) }
+    override suspend fun getTodoById(id: Int): TodoEntity? = todoDao.getTodoById(id)
 
     override suspend fun updateTodo(id: Int, body: Map<String, Any>): NetworkResult<TodoDto> {
         val response = safeCall { todoApi.updateTodo(id, body) }
@@ -52,6 +52,19 @@ class TodosRepositoryImpl @Inject constructor(
         val response = safeCall { todoApi.addTodo(todo) }
         if (response is NetworkResult.Success) {
             todoDao.addTodo(todo.toEntity())
+        }
+        return response
+    }
+
+    override suspend fun toggleStatus(id: Int): NetworkResult<TodoDto> {
+        val todo =
+            todoDao.getTodoById(id) ?: return NetworkResult.Error("Couldn't find todo with id: $id")
+        val newStatus = !todo.completed
+        val response = safeCall { todoApi.updateTodo(id, mapOf("completed" to newStatus)) }
+        if (response is NetworkResult.Success) {
+            val updatedTodo = todo.copy(completed = newStatus)
+            todoDao.updateTodo(updatedTodo)
+            return NetworkResult.Success(data = updatedTodo.toDto())
         }
         return response
     }

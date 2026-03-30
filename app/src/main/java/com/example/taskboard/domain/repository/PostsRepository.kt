@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface PostsRepository {
     fun getAllPosts(): Flow<List<PostEntity>?>
     suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse>
-    suspend fun getPostById(id: Int): NetworkResult<PostDto>
+    suspend fun getPostById(id: Int): PostEntity?
     suspend fun updatePost(id: Int, body: Map<String, Any>): NetworkResult<PostDto>
     suspend fun deletePost(postId: Int) : NetworkResult<PostDto>
     suspend fun addPost(post: PostDto) : NetworkResult<PostDto>
