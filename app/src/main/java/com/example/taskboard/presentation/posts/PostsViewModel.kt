@@ -33,13 +33,17 @@ class PostsViewModel @Inject constructor(
             ?: emptyList()
     }
 
+    init {
+        loadNextBatch()
+    }
+
     override fun loadNextBatch() {
         if (isFetching) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             isFetching = true
 
-            when (val result = postsRepository.refreshPosts(30, currentSkip)) {
+            when (val result = postsRepository.refreshPosts(pageSize, currentSkip)) {
                 is NetworkResult.Success -> {
                     currentSkip += pageSize
                     _uiState.update {

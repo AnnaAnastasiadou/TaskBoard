@@ -6,6 +6,7 @@ import com.example.taskboard.data.local.entity.UserEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.model.User
+import com.example.taskboard.domain.repository.AuthRepository
 import com.example.taskboard.domain.repository.ProfileRepository
 import com.example.taskboard.presentation.common.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val networkMonitor: NetworkMonitor
+    private val networkMonitor: NetworkMonitor,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     val userProfile: StateFlow<User?> = profileRepository.getUserProfile().map { userEntity ->
@@ -88,5 +90,11 @@ class ProfileViewModel @Inject constructor(
 
     fun onRetry() {
         profileDataLoad()
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
     }
 }

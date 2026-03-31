@@ -1,6 +1,7 @@
 package com.example.taskboard.data.repository
 
 import com.example.taskboard.core.TokenProvider
+import com.example.taskboard.data.local.database.TaskBoardDatabase
 import com.example.taskboard.data.remote.api.AuthApi
 import com.example.taskboard.data.remote.dto.LoginRequest
 import com.example.taskboard.data.remote.dto.LoginResponse
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val sharedPreferencesDatasource: SharedPreferencesDatasource,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider,
+    private val database: TaskBoardDatabase
 ) : AuthRepository {
     private val _isLoggedIn = MutableStateFlow(isUserLoggedIn())
     override val isLoggedIn = _isLoggedIn.asStateFlow()
@@ -61,6 +63,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout() = withContext(Dispatchers.IO) {
         sharedPreferencesDatasource.clearTokens()
         tokenProvider.clearAccessToken()
+        database.clearAllTables()
         _isLoggedIn.value = false
     }
 

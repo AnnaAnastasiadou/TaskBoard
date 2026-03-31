@@ -1,18 +1,26 @@
 package com.example.taskboard.presentation.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.taskboard.R
 import com.example.taskboard.databinding.ActivityMainBinding
+import com.example.taskboard.domain.repository.AuthRepository
+import com.example.taskboard.presentation.auth.LoginActivity
 import com.example.taskboard.presentation.home.HomeFragment
 import com.example.taskboard.presentation.posts.PostsFragment
 import com.example.taskboard.presentation.profile.ProfileFragment
 import com.example.taskboard.presentation.todos.TodosFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var activeFragment: Fragment? = null
+    @Inject lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +41,20 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.topBar)
         setContentView(binding.root)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                authRepository.isLoggedIn.collect { loggedIn ->
+                    if(!loggedIn) {
+                        val intent = Intent(this@MainActivity, LoginActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+        }
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {

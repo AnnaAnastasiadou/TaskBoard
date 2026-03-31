@@ -27,6 +27,10 @@ class TodosViewModel @Inject constructor(
             ?: emptyList()
     }
 
+    init {
+        loadNextBatch()
+    }
+
     override fun loadNextBatch() {
         if (isFetching) return
         viewModelScope.launch {

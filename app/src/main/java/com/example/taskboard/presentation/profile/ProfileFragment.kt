@@ -35,6 +35,10 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             viewModel.onRetry()
         }
 
+        binding.btnLogout.setOnClickListener {
+            viewModel.logOut()
+        }
+
         observeUi()
     }
 

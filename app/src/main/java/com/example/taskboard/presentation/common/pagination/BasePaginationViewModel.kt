@@ -24,7 +24,6 @@ abstract class BasePaginationViewModel<T> (
     init {
         subscribeToData()
         observeNetwork()
-        loadNextBatch()
     }
 
     abstract fun loadNextBatch()
