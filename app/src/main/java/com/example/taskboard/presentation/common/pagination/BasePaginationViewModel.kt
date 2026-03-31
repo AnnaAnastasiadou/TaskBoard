@@ -32,7 +32,7 @@ abstract class BasePaginationViewModel<T> (
     protected fun subscribeToData() {
         viewModelScope.launch {
             dataFlow.collect { list ->
-                _uiState.update { it.copy(isLoading = false, error = null, networkError = null, data = list) }
+                _uiState.update { it.copy(data = list) }
             }
         }
     }

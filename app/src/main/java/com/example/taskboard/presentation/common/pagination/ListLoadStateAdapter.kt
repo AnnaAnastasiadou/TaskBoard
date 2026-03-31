@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.common
+package com.example.taskboard.presentation.common.pagination
 
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +31,7 @@ class ListLoadStateAdapter(
         parent: ViewGroup,
         viewType: Int
     ): LoadStateViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_list_load_state, parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.load_state, parent,false)
         return LoadStateViewHolder(view)
     }
 

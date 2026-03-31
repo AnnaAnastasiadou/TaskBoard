@@ -24,7 +24,7 @@
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="@color/design_default_color_error"
         tools:text="No internet connection"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/btn_retry"
@@ -33,5 +33,5 @@
         android:layout_gravity="center"
         android:text="Try Again"
         style="@style/Widget.Material3.Button.TextButton"
-        tools:visibility="visible"/>
+        tools:visibility="gone"/>
 </LinearLayout>

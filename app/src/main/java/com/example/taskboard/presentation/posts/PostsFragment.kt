@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 import com.example.taskboard.databinding.PostsFragmentBinding
 import com.example.taskboard.domain.model.Post
-import com.example.taskboard.presentation.common.ListLoadState
-import com.example.taskboard.presentation.common.ListLoadStateAdapter
+import com.example.taskboard.presentation.common.pagination.ListLoadState
+import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,8 +32,8 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
 
         _binding = PostsFragmentBinding.bind(view)
 
-        setUpRecyclerView()
         observeUiState()
+        setUpRecyclerView()
     }
 
     private fun setUpRecyclerView() {
@@ -57,8 +57,6 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    postsAdapter.updateData(newPostsList = state.data ?: emptyList())
-
                     when {
                         state.isLoading -> listLoadStateAdapter.setState(ListLoadState.Loading)
                         state.error != null -> listLoadStateAdapter.setState(
@@ -75,6 +73,7 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
                             listLoadStateAdapter.setState(ListLoadState.Hidden)
                         }
                     }
+                    postsAdapter.updateData(newPostsList = state.data ?: emptyList())
                 }
             }
         }

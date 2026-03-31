@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.common
+package com.example.taskboard.presentation.common.pagination
 
 sealed class ListLoadState {
     object Hidden : ListLoadState()

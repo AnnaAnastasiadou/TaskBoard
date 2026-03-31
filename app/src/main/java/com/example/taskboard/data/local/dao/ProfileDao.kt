@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
+    @Query("SELECT COUNT(*) FROM users")
+    suspend fun getUserCount(): Int
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity)
 

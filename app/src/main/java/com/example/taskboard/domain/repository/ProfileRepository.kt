@@ -9,4 +9,5 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileRepository {
     suspend fun refreshUserProfile(): NetworkResult<UserDto>
     fun getUserProfile(): Flow<UserEntity?>
+    suspend fun isProfileDbEmpty(): Boolean
 }
