@@ -14,8 +14,8 @@ import com.example.taskboard.R
 import com.example.taskboard.databinding.ActivityMainBinding
 import com.example.taskboard.domain.repository.AuthRepository
 import com.example.taskboard.presentation.auth.LoginActivity
-import com.example.taskboard.presentation.home.HomeFragment
-import com.example.taskboard.presentation.posts.PostsFragment
+import com.example.taskboard.presentation.posts.details.PostDetailsFragment
+import com.example.taskboard.presentation.posts.list.PostsFragment
 import com.example.taskboard.presentation.profile.ProfileFragment
 import com.example.taskboard.presentation.todos.TodosFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,11 +29,17 @@ class MainActivity : AppCompatActivity() {
         object Posts : Screen("posts_fragment", "Posts")
         object Todos : Screen("todos_fragment", "Todos")
         object Profile : Screen("profile_fragment", "Profile")
+        class PostDetails(val postId: Int?) : Screen(
+            "details_${postId ?: "new"}",
+            postId?.let { "Post Details" } ?: "New Post"
+        )
     }
 
     private lateinit var binding: ActivityMainBinding
     private var activeFragment: Fragment? = null
-    @Inject lateinit var authRepository: AuthRepository
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 authRepository.isLoggedIn.collect { loggedIn ->
-                    if(!loggedIn) {
+                    if (!loggedIn) {
                         val intent = Intent(this@MainActivity, LoginActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         }
@@ -92,9 +98,18 @@ class MainActivity : AppCompatActivity() {
         val fragmentManager = supportFragmentManager
         val targetFragment: Fragment =
             fragmentManager.findFragmentByTag(screen.tag) ?: when (screen) {
-                Screen.Posts -> PostsFragment()
-                Screen.Todos -> TodosFragment()
-                Screen.Profile -> ProfileFragment()
+                is Screen.Posts -> PostsFragment()
+                is Screen.Todos -> TodosFragment()
+                is Screen.Profile -> ProfileFragment()
+                is Screen.PostDetails -> {
+                    PostDetailsFragment().apply {
+                        screen.postId?.let { id ->
+                            val bundle = Bundle()
+                            bundle.putInt("post_id", screen.postId)
+                            this.arguments = bundle
+                        }
+                    }
+                }
             }
 
         supportActionBar?.title = screen.title

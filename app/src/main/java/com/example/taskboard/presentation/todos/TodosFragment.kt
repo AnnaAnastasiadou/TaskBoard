@@ -2,7 +2,6 @@ package com.example.taskboard.presentation.todos
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -12,8 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
-import com.example.taskboard.databinding.PostsFragmentBinding
-import com.example.taskboard.databinding.TodosFragmentBinding
+import com.example.taskboard.databinding.TodoListFragmentBinding
 import com.example.taskboard.presentation.common.pagination.ListLoadState
 import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
 import com.example.taskboard.presentation.common.showErrorMessage
@@ -21,16 +19,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class TodosFragment : Fragment(R.layout.todos_fragment) {
+class TodosFragment : Fragment(R.layout.todo_list_fragment) {
     private val viewModel: TodosViewModel by viewModels()
-    private var _binding: TodosFragmentBinding? = null
+    private var _binding: TodoListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var todosAdapter: TodosAdapter
     private lateinit var listLoadStateAdapter: ListLoadStateAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = TodosFragmentBinding.bind(view)
+        _binding = TodoListFragmentBinding.bind(view)
         setUpRecyclerView()
         observeUiState()
     }

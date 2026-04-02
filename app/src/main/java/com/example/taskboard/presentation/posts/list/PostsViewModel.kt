@@ -1,26 +1,17 @@
-package com.example.taskboard.presentation.posts
+package com.example.taskboard.presentation.posts.list
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.model.Post
-import com.example.taskboard.domain.model.Todo
 import com.example.taskboard.domain.repository.PostsRepository
-import com.example.taskboard.domain.repository.TodosRepository
 import com.example.taskboard.presentation.common.NetworkMonitor
 import com.example.taskboard.presentation.common.pagination.BasePaginationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.emptyList
-
 
 @HiltViewModel
 class PostsViewModel @Inject constructor(
@@ -77,4 +68,3 @@ class PostsViewModel @Inject constructor(
     }
 
 }
-

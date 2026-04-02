@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.posts
+package com.example.taskboard.presentation.posts.list
 
 import android.os.Bundle
 import android.view.View
@@ -11,17 +11,19 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
-import com.example.taskboard.databinding.PostsFragmentBinding
+import com.example.taskboard.databinding.PostListFragmentBinding
 import com.example.taskboard.domain.model.Post
 import com.example.taskboard.presentation.common.pagination.ListLoadState
 import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
+import com.example.taskboard.presentation.main.MainActivity
+import com.example.taskboard.presentation.posts.list.PostsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PostsFragment : Fragment(R.layout.posts_fragment) {
+class PostsFragment : Fragment(R.layout.post_list_fragment) {
     private val viewModel: PostsViewModel by viewModels()
-    private var _binding: PostsFragmentBinding? = null
+    private var _binding: PostListFragmentBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var postsAdapter: PostsAdapter
@@ -30,14 +32,17 @@ class PostsFragment : Fragment(R.layout.posts_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = PostsFragmentBinding.bind(view)
+        _binding = PostListFragmentBinding.bind(view)
 
         observeUiState()
         setUpRecyclerView()
     }
 
     private fun setUpRecyclerView() {
-        postsAdapter = PostsAdapter(emptyList(), {})
+        postsAdapter = PostsAdapter(emptyList()) {postId ->
+            val destination = MainActivity.Screen.PostDetails(postId)
+            (activity as MainActivity).switchFragment(destination)
+        }
 
         listLoadStateAdapter = ListLoadStateAdapter { viewModel.onRetry() }
 

@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.posts
+package com.example.taskboard.presentation.posts.list
 
 import android.view.LayoutInflater
 import android.view.View

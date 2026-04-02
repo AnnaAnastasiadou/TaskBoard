@@ -13,9 +13,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.taskboard.R
 import com.example.taskboard.databinding.ProfileFragmentBinding
-import com.example.taskboard.databinding.TodosFragmentBinding
 import com.example.taskboard.presentation.common.showErrorMessage
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
