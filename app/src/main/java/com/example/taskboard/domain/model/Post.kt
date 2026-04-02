@@ -8,7 +8,7 @@ data class Post(
     val title: String,
     val body: String,
     val tags: List<String>,
-    val updatedAt: Long?,
+    val updatedAt: Long? = null,
     val likes: Int,
     val dislikes: Int
 )

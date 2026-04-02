@@ -27,8 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             app:chipSpacingHorizontal="8dp"
-            app:chipSpacingVertical="4dp">
-        </com.google.android.material.chip.ChipGroup>
+            app:chipSpacingVertical="4dp"></com.google.android.material.chip.ChipGroup>
 
         <TextView
             android:id="@+id/post_body"

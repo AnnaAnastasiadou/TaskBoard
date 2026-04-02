@@ -24,5 +24,8 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     override fun getUserProfile(): Flow<UserEntity?> = profileDao.getCurrentUser()
+
+    override suspend fun getUserId(): Int = profileDao.getUserId()
+
     override suspend fun isProfileDbEmpty(): Boolean = profileDao.getUserCount() == 0
 }

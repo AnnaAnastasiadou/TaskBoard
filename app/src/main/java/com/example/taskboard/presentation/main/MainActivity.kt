@@ -14,7 +14,7 @@ import com.example.taskboard.R
 import com.example.taskboard.databinding.ActivityMainBinding
 import com.example.taskboard.domain.repository.AuthRepository
 import com.example.taskboard.presentation.auth.LoginActivity
-import com.example.taskboard.presentation.posts.details.PostDetailsFragment
+import com.example.taskboard.presentation.posts.details.PostDetailsActivity
 import com.example.taskboard.presentation.posts.list.PostsFragment
 import com.example.taskboard.presentation.profile.ProfileFragment
 import com.example.taskboard.presentation.todos.TodosFragment
@@ -29,10 +29,6 @@ class MainActivity : AppCompatActivity() {
         object Posts : Screen("posts_fragment", "Posts")
         object Todos : Screen("todos_fragment", "Todos")
         object Profile : Screen("profile_fragment", "Profile")
-        class PostDetails(val postId: Int?) : Screen(
-            "details_${postId ?: "new"}",
-            postId?.let { "Post Details" } ?: "New Post"
-        )
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -87,11 +83,11 @@ class MainActivity : AppCompatActivity() {
             switchFragment(Screen.Posts)
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top)
-            insets
-        }
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            v.updatePadding(top = systemBars.top)
+//            insets
+//        }
     }
 
     fun switchFragment(screen: Screen) {
@@ -101,15 +97,6 @@ class MainActivity : AppCompatActivity() {
                 is Screen.Posts -> PostsFragment()
                 is Screen.Todos -> TodosFragment()
                 is Screen.Profile -> ProfileFragment()
-                is Screen.PostDetails -> {
-                    PostDetailsFragment().apply {
-                        screen.postId?.let { id ->
-                            val bundle = Bundle()
-                            bundle.putInt("post_id", screen.postId)
-                            this.arguments = bundle
-                        }
-                    }
-                }
             }
 
         supportActionBar?.title = screen.title

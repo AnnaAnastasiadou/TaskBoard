@@ -1,5 +1,6 @@
 package com.example.taskboard.presentation.posts.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import com.example.taskboard.domain.model.Post
 import com.example.taskboard.presentation.common.pagination.ListLoadState
 import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
 import com.example.taskboard.presentation.main.MainActivity
+import com.example.taskboard.presentation.posts.details.PostDetailsActivity
 import com.example.taskboard.presentation.posts.list.PostsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,7 +27,6 @@ class PostsFragment : Fragment(R.layout.post_list_fragment) {
     private val viewModel: PostsViewModel by viewModels()
     private var _binding: PostListFragmentBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var postsAdapter: PostsAdapter
     private lateinit var listLoadStateAdapter: ListLoadStateAdapter
 
@@ -39,14 +40,23 @@ class PostsFragment : Fragment(R.layout.post_list_fragment) {
     }
 
     private fun setUpRecyclerView() {
-        postsAdapter = PostsAdapter(emptyList()) {postId ->
-            val destination = MainActivity.Screen.PostDetails(postId)
-            (activity as MainActivity).switchFragment(destination)
+        postsAdapter = PostsAdapter(emptyList()) { clickedPostId ->
+            val intent = Intent(requireContext(), PostDetailsActivity::class.java).apply {
+                putExtra("post_id", clickedPostId)
+            }
+            startActivity(intent)
         }
 
         listLoadStateAdapter = ListLoadStateAdapter { viewModel.onRetry() }
 
         binding.rvPosts.adapter = ConcatAdapter(postsAdapter, listLoadStateAdapter)
+
+        binding.btnAddPost.setOnClickListener {
+            val intent = Intent(requireContext(), PostDetailsActivity::class.java).apply {
+                putExtra("post_id", -1)
+            }
+            startActivity(intent)
+        }
 
         binding.rvPosts.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

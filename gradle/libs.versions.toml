@@ -16,6 +16,7 @@ ksp = "2.1.10-1.0.29"
 fragmentKtx = "1.8.5"
 room = "2.6.1"
 coil = "2.6.0"
+flexbox = "3.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,9 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 
 # Coil
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+
+# Flexbox
+google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 
 
 [plugins]

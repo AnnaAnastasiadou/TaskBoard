@@ -17,6 +17,9 @@ interface ProfileDao {
     @Query("SELECT * FROM users LIMIT 1")
     fun getCurrentUser(): Flow<UserEntity?>
 
+    @Query("SELECT id FROM users LIMIT 1")
+    suspend fun getUserId(): Int
+
     @Query("DELETE FROM users")
     suspend fun clearUsers()
 }
