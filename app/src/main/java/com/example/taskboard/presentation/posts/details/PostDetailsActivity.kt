@@ -1,25 +1,17 @@
 package com.example.taskboard.presentation.posts.details
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.taskboard.R
 import com.example.taskboard.databinding.ItemTagEditBinding
 import com.example.taskboard.databinding.PostDetailsActivityBinding
-import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -33,50 +25,104 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
         binding = PostDetailsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.topBar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        setupToolbar()
+        setupMode()
+        setupListeners()
+        observeUiState()
 
-        val postId = intent.getIntExtra("post_id", -1)
+    }
 
-        if (postId == -1) {
-            binding.topBar.title = "New Post"
-            binding.btnSave.text = "Add"
-            binding.btnDelete.isVisible = false
-            binding.spacer.isVisible = false
-        } else {
-            binding.topBar.title = "Edit Post #$postId"
-            binding.btnSave.text = "Update"
-            binding.btnDelete.isVisible = true
-            binding.spacer.isVisible = true
-        }
-
-        binding.btnAddTag.setOnClickListener {
-            viewModel.addEmptyTag()
-        }
-
+    private fun observeUiState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     state.data?.let { post ->
-                        binding.etTitle.setText(post.title)
-                        binding.etBody.setText(post.body)
-                        if (binding.postTagsGroup.childCount != post.tags.size) {
-                            displayTags(post.tags)
+                        if (binding.etTitle.text.toString() != post.title) {
+                            binding.etTitle.setText(post.title)
                         }
+
+                        if (binding.etBody.text.toString() != post.body) {
+                            binding.etBody.setText(post.body)
+                        }
+
+                        val errors = state.validationError
+                        binding.tilTitle.error = errors.titleError
+                        binding.tilBody.error = errors.bodyError
+
+                        if (errors.tagsError != null && errors.errorTagIndices.isEmpty()) {
+                            binding.tvTagsError.text = errors.tagsError
+                            binding.tvTagsError.visibility = View.VISIBLE
+                        } else {
+                            binding.tvTagsError.visibility = View.GONE
+                        }
+
+                        if (binding.postTagsGroup.childCount != post.tags.size) {
+                            displayTags(post.tags, errors.errorTagIndices, errors.tagsError ?: "")
+                        } else {
+                            updateTagErrors(errors.errorTagIndices, errors.tagsError ?: "")
+                        }
+
                     }
                 }
             }
         }
     }
 
-    private fun displayTags(tags: List<String>) {
+    private fun setupMode() {
+        val postId = intent.getIntExtra("post_id", -1)
+        val isEditMode = postId != -1
+
+        binding.topBar.title = if (isEditMode) "Edit Post #$postId" else "New Post"
+        binding.btnSave.text = if (isEditMode) "Update" else "Add"
+        binding.btnDelete.isVisible = isEditMode
+        binding.spacer.isVisible = isEditMode
+    }
+
+    private fun setupToolbar() {
+        binding.topBar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun setupListeners() {
+        binding.btnSave.setOnClickListener {
+            viewModel.savePost()
+        }
+
+        binding.btnAddTag.setOnClickListener {
+            viewModel.addEmptyTag()
+        }
+
+        binding.etTitle.doAfterTextChanged { text ->
+            viewModel.updateTitle(text.toString())
+        }
+
+        binding.etBody.doAfterTextChanged { text ->
+            viewModel.updateBody(text.toString())
+        }
+    }
+
+    private fun updateTagErrors(invalidIndices: Set<Int>, errorMessage: String) {
+        for (i in 0 until binding.postTagsGroup.childCount) {
+            val tagView = binding.postTagsGroup.getChildAt(i)
+            val tagBinding = ItemTagEditBinding.bind(tagView)
+
+            tagBinding.etTagName.error =
+                if (invalidIndices.contains(i)) errorMessage else null
+        }
+    }
+
+    private fun displayTags(tags: List<String>, invalidIndices: Set<Int>, errorMessage: String) {
         binding.postTagsGroup.removeAllViews()
         tags.forEachIndexed { tagIndex, tagText ->
             val tagBinding =
                 ItemTagEditBinding.inflate(layoutInflater, binding.postTagsGroup, false)
 
             tagBinding.etTagName.setText(tagText)
+
+            if (invalidIndices.contains(tagIndex)) {
+                tagBinding.etTagName.error = errorMessage
+            }
 
             tagBinding.etTagName.doAfterTextChanged { text ->
                 viewModel.updateTagAt(tagIndex, text.toString())

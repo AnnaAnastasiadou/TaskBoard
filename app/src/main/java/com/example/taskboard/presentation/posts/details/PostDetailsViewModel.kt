@@ -19,8 +19,7 @@ class PostDetailsViewModel @Inject constructor(
     private val postsRepository: PostsRepository,
     private val profileRepository: ProfileRepository,
     savedStateHandle: SavedStateHandle
-) :
-    ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -44,8 +43,7 @@ class PostDetailsViewModel @Inject constructor(
             } else {
                 _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        data = Post(
+                        isLoading = false, data = Post(
                             id = 0,
                             userId = profileRepository.getUserId(),
                             title = "",
@@ -70,6 +68,14 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
+    fun updateTitle(newTitle: String) {
+        _uiState.update { it.copy(data = it.data?.copy(title = newTitle)) }
+    }
+
+    fun updateBody(newBody: String) {
+        _uiState.update { it.copy(data = it.data?.copy(body = newBody)) }
+    }
+
     fun updateTagAt(index: Int, newText: String) {
         val currentTags = _uiState.value.data?.tags?.toMutableList() ?: return
 
@@ -89,13 +95,31 @@ class PostDetailsViewModel @Inject constructor(
     fun addEmptyTag() {
         val currentPost = _uiState.value.data ?: return
         val currentTags = currentPost.tags
-        if (currentTags.isNotEmpty() && currentTags.last().isBlank()) {
-            return
-        }
+        if (currentTags.any { it.isBlank() }) return
 
         val updatedTags = currentTags.toMutableList()
         updatedTags.add("")
 
         _uiState.update { it.copy(data = it.data?.copy(tags = updatedTags)) }
+    }
+
+    fun savePost() {
+        val currentPost = _uiState.value.data ?: return
+
+        val invalidIndices = currentPost.tags.mapIndexedNotNull { index, tag ->
+            if (tag.isBlank()) index else null
+        }.toSet()
+
+        val errors = PostValidationError(
+            titleError = if (currentPost.title.isBlank()) "Title is required" else null,
+            bodyError = if (currentPost.body.isBlank()) "Title is required" else null,
+            tagsError = if (invalidIndices.isNotEmpty()) "Tags cannot be blank" else if (currentPost.tags.isEmpty()) "Please insert at least 1 tag" else null,
+            errorTagIndices = invalidIndices
+        )
+
+        _uiState.update { it.copy(validationError = errors) }
+        if (errors.titleError != null || errors.bodyError != null || errors.tagsError != null) {
+            return
+        }
     }
 }
