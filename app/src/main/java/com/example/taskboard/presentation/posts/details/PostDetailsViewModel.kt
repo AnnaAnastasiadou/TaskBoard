@@ -3,13 +3,18 @@ package com.example.taskboard.presentation.posts.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskboard.core.SessionProvider
+import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
+import com.example.taskboard.domain.mapper.toDto
 import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.repository.PostsRepository
 import com.example.taskboard.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,11 +22,14 @@ import javax.inject.Inject
 @HiltViewModel
 class PostDetailsViewModel @Inject constructor(
     private val postsRepository: PostsRepository,
-    private val profileRepository: ProfileRepository,
+    private val sessionProvider: SessionProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailsUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _uiEvent = Channel<PostUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val postId: Int = savedStateHandle.get<Int>("post_id")!!
 
@@ -29,23 +37,26 @@ class PostDetailsViewModel @Inject constructor(
         loadPostDetails()
     }
 
-
     private fun loadPostDetails() {
         viewModelScope.launch {
             if (postId != -1) {
-                _uiState.update { it.copy(isLoading = true, data = null) }
+                _uiState.update { it.copy(status = ScreenStatus.LOADING_DATA, data = null) }
                 val postEntity = postsRepository.getPostById(postId)
                 if (postEntity != null) {
                     _uiState.update {
-                        it.copy(isLoading = false, data = postEntity.toDomain())
+                        it.copy(status = ScreenStatus.IDLE, data = postEntity.toDomain())
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(status = ScreenStatus.ERROR, data = null)
                     }
                 }
             } else {
                 _uiState.update {
                     it.copy(
-                        isLoading = false, data = Post(
+                        status = ScreenStatus.IDLE, data = Post(
                             id = 0,
-                            userId = profileRepository.getUserId(),
+                            userId = sessionProvider.getUserId() ?: 0,
                             title = "",
                             body = "",
                             tags = emptyList(),
@@ -56,6 +67,10 @@ class PostDetailsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onRetry() {
+        loadPostDetails()
     }
 
     fun removeTagAt(index: Int) {
@@ -103,7 +118,7 @@ class PostDetailsViewModel @Inject constructor(
         _uiState.update { it.copy(data = it.data?.copy(tags = updatedTags)) }
     }
 
-    fun savePost() {
+    suspend fun savePost() {
         val currentPost = _uiState.value.data ?: return
 
         val invalidIndices = currentPost.tags.mapIndexedNotNull { index, tag ->
@@ -120,6 +135,72 @@ class PostDetailsViewModel @Inject constructor(
         _uiState.update { it.copy(validationError = errors) }
         if (errors.titleError != null || errors.bodyError != null || errors.tagsError != null) {
             return
+        }
+
+        val requestBody = mapOf(
+            "title" to currentPost.title, "body" to currentPost.body, "tags" to currentPost.tags
+        )
+
+        val isEditMode = postId != -1
+
+        val result = if (isEditMode) postsRepository.updatePost(
+            postId,
+            body = requestBody
+        ) else postsRepository.addPost(currentPost.toDto())
+
+        _uiState.update { it.copy(status = ScreenStatus.SAVING, snackbarMessage = "Saving...") }
+        when (result) {
+            is NetworkResult.Error -> _uiState.update {
+                it.copy(
+                    status = ScreenStatus.IDLE,
+                    snackbarMessage = result.message
+                )
+            }
+
+            is NetworkResult.NetworkError -> _uiState.update {
+                it.copy(
+                    status = ScreenStatus.IDLE,
+                    snackbarMessage = result.message
+                )
+            }
+
+            is NetworkResult.Success -> {
+                _uiState.update {
+                    it.copy(
+                        status = ScreenStatus.IDLE,
+                        snackbarMessage = null
+                    )
+                }
+                _uiEvent.send(PostUiEvent.NavigateBack)
+            }
+        }
+    }
+
+    suspend fun deletePost() {
+        _uiState.update { it.copy(status = ScreenStatus.DELETING, snackbarMessage = "Deleting...") }
+        when (val result = postsRepository.deletePost(postId)) {
+            is NetworkResult.Success -> {
+                _uiState.update {
+                    it.copy(
+                        snackbarMessage = null
+                    )
+                }
+                _uiEvent.send(PostUiEvent.NavigateBack)
+            }
+
+            is NetworkResult.NetworkError -> _uiState.update {
+                it.copy(
+                    status = ScreenStatus.IDLE,
+                    snackbarMessage = result.message
+                )
+            }
+
+            is NetworkResult.Error -> _uiState.update {
+                it.copy(
+                    status = ScreenStatus.IDLE,
+                    snackbarMessage = result.message
+                )
+            }
         }
     }
 }

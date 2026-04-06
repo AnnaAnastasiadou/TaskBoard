@@ -1,6 +1,6 @@
 package com.example.taskboard.data.repository
 
-import com.example.taskboard.core.TokenProvider
+import com.example.taskboard.core.SessionProvider
 import com.example.taskboard.data.local.database.TaskBoardDatabase
 import com.example.taskboard.data.remote.api.AuthApi
 import com.example.taskboard.data.remote.dto.LoginRequest
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val sharedPreferencesDatasource: SharedPreferencesDatasource,
-    private val tokenProvider: TokenProvider,
+    private val sessionProvider: SessionProvider,
     private val database: TaskBoardDatabase
 ) : AuthRepository {
     private val _isLoggedIn = MutableStateFlow(isUserLoggedIn())
@@ -31,11 +31,11 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApi.refreshToken(RefreshRequestDto(refreshToken)).execute()
 
             if (response.isSuccessful && response.body() != null) {
-                val newTokens = response.body()!!
+                val authData = response.body()!!
 
-                sharedPreferencesDatasource.setTokens(newTokens.accessToken, newTokens.refreshToken)
-                tokenProvider.setAccessToken(newTokens.accessToken)
-                newTokens.accessToken
+                sharedPreferencesDatasource.setTokens(authData.accessToken, authData.refreshToken)
+                sessionProvider.setAccessToken(authData.accessToken)
+                authData.accessToken
             } else {
                 null
             }
@@ -53,7 +53,9 @@ class AuthRepositoryImpl @Inject constructor(
         if (result is NetworkResult.Success) {
             val loginData = result.data
             sharedPreferencesDatasource.setTokens(loginData.accessToken, loginData.refreshToken)
-            tokenProvider.setAccessToken(loginData.accessToken)
+            sharedPreferencesDatasource.setUserId(loginData.id)
+            sessionProvider.setAccessToken(loginData.accessToken)
+            sessionProvider.setUserId(loginData.id)
             _isLoggedIn.value = true
         }
         result
@@ -61,19 +63,20 @@ class AuthRepositoryImpl @Inject constructor(
 
 
     override suspend fun logout() = withContext(Dispatchers.IO) {
-        sharedPreferencesDatasource.clearTokens()
-        tokenProvider.clearAccessToken()
+        sharedPreferencesDatasource.clear()
+        sessionProvider.clearAccessToken()
+
         database.clearAllTables()
         _isLoggedIn.value = false
     }
 
     override fun isUserLoggedIn(): Boolean {
-        val cachedToken = tokenProvider.getAccessToken()
+        val cachedToken = sessionProvider.getAccessToken()
         if (cachedToken != null) return true
 
         val persistedAccessToken = sharedPreferencesDatasource.getAccessToken()
         if (persistedAccessToken != null) {
-            tokenProvider.setAccessToken(persistedAccessToken)
+            sessionProvider.setAccessToken(persistedAccessToken)
             return true
         }
 

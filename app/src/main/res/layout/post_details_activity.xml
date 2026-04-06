@@ -24,10 +24,21 @@
             tools:title="Post Details" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <include
+        android:id="@+id/stateLayout"
+        layout="@layout/load_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        android:visibility="visible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/post_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout

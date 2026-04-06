@@ -1,6 +1,6 @@
 package com.example.taskboard.data.remote.interceptor
 
-import com.example.taskboard.core.TokenProvider
+import com.example.taskboard.core.SessionProvider
 import com.example.taskboard.domain.repository.AuthRepository
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
@@ -13,7 +13,7 @@ import javax.inject.Provider
 class TokenAuthenticator @Inject constructor(
     // OkHttp needs TokenAuthenticator and vice versa so we use Provider to stop circular dependency
     private val authRepository: Provider<AuthRepository>,
-    private val tokenProvider: TokenProvider
+    private val sessionProvider: SessionProvider
 ) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         // 1. Manually check the retry count to avoid infinite loops
@@ -25,7 +25,7 @@ class TokenAuthenticator @Inject constructor(
             val repo = authRepository.get()
 
             // Get the current local token vs the one used in the failed request
-            val currentToken = tokenProvider.getAccessToken()
+            val currentToken = sessionProvider.getAccessToken()
             val requestToken = response.request.header("Authorization")?.removePrefix("Bearer ")
 
             val tokenToUse = if (currentToken != requestToken) {

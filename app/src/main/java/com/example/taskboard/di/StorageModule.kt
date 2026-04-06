@@ -1,7 +1,7 @@
 package com.example.taskboard.di
 
-import com.example.taskboard.core.TokenProvider
-import com.example.taskboard.core.TokenProviderImpl
+import com.example.taskboard.core.SessionProvider
+import com.example.taskboard.core.SessionProviderImpl
 import com.example.taskboard.data.local.preferences.SharedPreferencesDatasource
 import com.example.taskboard.data.local.preferences.SharedPreferencesDatasourceImpl
 import dagger.Binds
@@ -19,7 +19,7 @@ abstract class StorageModule {
 
     @Binds
     @Singleton
-    abstract fun bindTokenProvider(
-        tokenProviderImpl: TokenProviderImpl
-    ): TokenProvider
+    abstract fun bindSessionProvider(
+        sessionProviderImpl: SessionProviderImpl
+    ): SessionProvider
 }

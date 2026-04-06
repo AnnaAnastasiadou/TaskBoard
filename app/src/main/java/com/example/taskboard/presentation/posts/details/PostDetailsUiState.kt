@@ -3,9 +3,10 @@ package com.example.taskboard.presentation.posts.details
 import com.example.taskboard.domain.model.Post
 
 data class PostDetailsUiState(
-    val isLoading: Boolean = false,
+    val status: ScreenStatus = ScreenStatus.IDLE,
     val data: Post? = null,
-    val validationError: PostValidationError = PostValidationError()
+    val validationError: PostValidationError = PostValidationError(),
+    val snackbarMessage: String? = null
 )
 
 data class PostValidationError(
@@ -14,3 +15,5 @@ data class PostValidationError(
     val tagsError: String? = null,
     val errorTagIndices: Set<Int> = emptySet()
 )
+
+enum class ScreenStatus { IDLE, ERROR, LOADING_DATA, SAVING, DELETING }

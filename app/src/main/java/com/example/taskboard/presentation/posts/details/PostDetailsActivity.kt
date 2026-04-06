@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.taskboard.R
 import com.example.taskboard.databinding.ItemTagEditBinding
 import com.example.taskboard.databinding.PostDetailsActivityBinding
+import com.example.taskboard.presentation.common.showErrorMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -29,13 +30,44 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
         setupMode()
         setupListeners()
         observeUiState()
+        observeUiEvents()
+    }
 
+    private fun observeUiEvents() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiEvent.collect { event ->
+                    when (event) {
+                        is PostUiEvent.NavigateBack -> finish()
+                    }
+                }
+            }
+        }
     }
 
     private fun observeUiState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
+                    binding.postDetails.isVisible = state.data != null
+                    binding.stateLayout.root.isVisible =
+                        state.status == ScreenStatus.LOADING_DATA || state.status == ScreenStatus.ERROR
+                    binding.stateLayout.progressBar.isVisible =
+                        state.status == ScreenStatus.LOADING_DATA
+                    val hasError = state.status == ScreenStatus.ERROR
+                    binding.stateLayout.btnRetry.isVisible = hasError
+                    binding.stateLayout.tvError.isVisible = hasError
+                    if (hasError) {
+                        binding.stateLayout.tvError.text = "Unable to retrieve data"
+                    }
+
+                    val isBusy = state.status == ScreenStatus.SAVING || state.status == ScreenStatus.DELETING
+
+                    binding.btnDelete.isEnabled = !isBusy
+                    binding.btnSave.isEnabled = !isBusy
+                    binding.btnCancel.isEnabled = !isBusy
+                    binding.btnAddTag.isEnabled = !isBusy
+
                     state.data?.let { post ->
                         if (binding.etTitle.text.toString() != post.title) {
                             binding.etTitle.setText(post.title)
@@ -61,13 +93,18 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
                         } else {
                             updateTagErrors(errors.errorTagIndices, errors.tagsError ?: "")
                         }
+                    }
 
+                    state.snackbarMessage?.let {
+                        showErrorMessage(
+                            rootView = binding.root,
+                            message = it
+                        )
                     }
                 }
             }
         }
     }
-
     private fun setupMode() {
         val postId = intent.getIntExtra("post_id", -1)
         val isEditMode = postId != -1
@@ -86,11 +123,27 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
 
     private fun setupListeners() {
         binding.btnSave.setOnClickListener {
-            viewModel.savePost()
+            lifecycleScope.launch {
+                viewModel.savePost()
+            }
+        }
+
+        binding.btnCancel.setOnClickListener {
+            finish()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.deletePost()
+            }
         }
 
         binding.btnAddTag.setOnClickListener {
             viewModel.addEmptyTag()
+        }
+
+        binding.stateLayout.btnRetry.setOnClickListener {
+            viewModel.onRetry()
         }
 
         binding.etTitle.doAfterTextChanged { text ->
@@ -133,9 +186,7 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
             }
 
             binding.postTagsGroup.addView(tagBinding.root)
-
         }
-
     }
 }
 

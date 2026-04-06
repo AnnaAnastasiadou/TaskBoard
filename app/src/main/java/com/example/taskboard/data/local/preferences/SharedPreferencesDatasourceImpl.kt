@@ -12,6 +12,7 @@ class SharedPreferencesDatasourceImpl @Inject constructor(@ApplicationContext co
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_USER_ID = "user_id"
     }
 
     override fun setTokens(accessToken: String, refreshToken: String) {
@@ -22,6 +23,10 @@ class SharedPreferencesDatasourceImpl @Inject constructor(@ApplicationContext co
         }
     }
 
+    override fun setUserId(userId: Int) {
+        preferences.edit { putInt(KEY_USER_ID, userId) }
+    }
+
     override fun getAccessToken(): String? {
         return preferences.getString(KEY_ACCESS_TOKEN, null)
     }
@@ -29,7 +34,7 @@ class SharedPreferencesDatasourceImpl @Inject constructor(@ApplicationContext co
         return preferences.getString(KEY_ACCESS_TOKEN, null)
     }
 
-    override fun clearTokens() {
+    override fun clear() {
         preferences.edit { clear() }
     }
 

@@ -20,9 +20,7 @@ class PostsViewModel @Inject constructor(
 ) : BasePaginationViewModel<Post>(networkMonitor) {
 
     override val dataFlow = postsRepository.getAllPosts().map { entities ->
-        entities?.map { it.toDomain() }
-            ?: emptyList()
-    }
+        entities.map { it.toDomain() } }
 
     init {
         loadNextBatch()
