@@ -88,7 +88,7 @@ class PostsFragment : Fragment(R.layout.post_list_fragment) {
                             listLoadStateAdapter.setState(ListLoadState.Hidden)
                         }
                     }
-                    postsAdapter.updateData(newPostsList = state.data ?: emptyList())
+                    postsAdapter.updateData(newPostsList = state.data)
                 }
             }
         }

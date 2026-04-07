@@ -33,7 +33,7 @@ class PostsAdapter(
 
             tagGroup.removeAllViews()
 
-            post.tags.forEach {tag ->
+            post.tags.forEach { tag ->
                 val chip = Chip(itemView.context).apply {
                     text = tag
                     isClickable = false
@@ -43,14 +43,14 @@ class PostsAdapter(
                 tagGroup.addView(chip)
             }
 
-            if(post.updatedAt != null) {
+            if (post.updatedAt != null) {
                 editedText.visibility = View.VISIBLE
                 updatedAt.text = formatDateTime(post.updatedAt)
             } else {
                 editedText.visibility = View.GONE
             }
 
-            itemView.setOnClickListener { onPostClick(post.id)}
+            itemView.setOnClickListener { onPostClick(post.id) }
         }
     }
 
@@ -73,8 +73,10 @@ class PostsAdapter(
         return postsList.size
     }
 
-    fun updateData(newPostsList: List<Post>) {
-        this.postsList = newPostsList
-        notifyDataSetChanged()
+    fun updateData(newPostsList: List<Post>?) {
+        if (newPostsList != null) {
+            this.postsList = newPostsList
+            notifyDataSetChanged()
+        }
     }
 }
