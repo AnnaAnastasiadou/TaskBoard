@@ -16,20 +16,13 @@ import kotlin.collections.emptyList
 class PostsRepositoryImpl @Inject constructor(
     private val postApi: PostApi, private val postDao: PostDao
 ) : PostsRepository {
-    override fun getAllPosts(): Flow<List<PostEntity>> = postDao.getPosts()
-    override suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse?> {
-        val localPosts = postDao.getPostsOnce()
-        val localCount = postDao.getPostCount()
-        val requiredCount = skip + limit
-        return if (localCount < requiredCount ) {
-            val result = safeCall { postApi.getPosts(limit, skip) }
-            if (result is NetworkResult.Success) {
-                postDao.insertPosts(result.data.posts.map { it.toEntity() })
-            }
-            result
-        } else {
-            NetworkResult.Success<PostResponse?>(null)
+    override fun observePosts(): Flow<List<PostEntity>> = postDao.getPosts()
+    override suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse> {
+        val result = safeCall { postApi.getPosts(limit, skip) }
+        if (result is NetworkResult.Success) {
+            postDao.insertPosts(result.data.posts.map { it.toEntity() })
         }
+        return result
     }
 
     override suspend fun getPostById(id: Int): PostEntity? = postDao.getPostById(id)

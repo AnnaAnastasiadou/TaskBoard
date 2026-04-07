@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/design_default_color_primary"
@@ -15,10 +16,13 @@
             android:id="@+id/top_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:layout_anchor="@+id/appBarLayout"
+            app:layout_anchorGravity="center"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/design_default_color_on_primary"
             app:titleTextColor="@color/design_default_color_on_primary"
-            tools:title="Post Details" />
+            tools:title="Todo Details" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
@@ -31,7 +35,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/post_details"
+        android:id="@+id/todo_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
@@ -48,7 +52,7 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Post Title">
+                android:hint="Todo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_title"
@@ -57,69 +61,13 @@
                     android:inputType="textCapSentences" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_body"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="What's on your mind?">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_body"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:minLines="5" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tags"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_add_tag"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="?attr/colorSecondary"
-                    app:cornerRadius="4dp"
-                    app:icon="@drawable/ic_add"
-                    app:iconTint="?attr/colorOnSecondary" />
-            </LinearLayout>
-
             <TextView
                 android:id="@+id/tvTagsError"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textColor="?attr/colorError"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/post_tags_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:alignContent="flex_start"
-                app:flexDirection="row"
-                app:flexWrap="wrap"
-                app:justifyContent="flex_start" />
 
             <LinearLayout
                 android:id="@+id/ll_button_container"
@@ -166,4 +114,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

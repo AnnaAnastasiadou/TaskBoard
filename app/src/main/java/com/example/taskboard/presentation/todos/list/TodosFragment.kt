@@ -1,5 +1,6 @@
-package com.example.taskboard.presentation.todos
+package com.example.taskboard.presentation.todos.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -15,6 +16,9 @@ import com.example.taskboard.databinding.TodoListFragmentBinding
 import com.example.taskboard.presentation.common.pagination.ListLoadState
 import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
 import com.example.taskboard.presentation.common.showErrorMessage
+import com.example.taskboard.presentation.posts.details.PostDetailsActivity
+import com.example.taskboard.presentation.todos.details.TodoDetailsActivity
+import com.example.taskboard.presentation.todos.list.TodosViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,7 +38,12 @@ class TodosFragment : Fragment(R.layout.todo_list_fragment) {
     }
 
     private fun setUpRecyclerView() {
-        todosAdapter = TodosAdapter(emptyList(), {}, { id -> viewModel.toggleTodoStatus(id) })
+        todosAdapter = TodosAdapter(emptyList(), toggleTodoStatus = { id -> viewModel.toggleTodoStatus(id) }) { todoId ->
+            val intent = Intent(requireContext(), TodoDetailsActivity::class.java).apply {
+                putExtra("todo_id", todoId)
+            }
+            startActivity(intent)
+        }
         listLoadStateAdapter = ListLoadStateAdapter { viewModel.onRetry() }
         binding.rvTodos.adapter = ConcatAdapter(todosAdapter, listLoadStateAdapter)
 
@@ -46,6 +55,13 @@ class TodosFragment : Fragment(R.layout.todo_list_fragment) {
                 viewModel.onScrollReachedIndex(lastVisiblePosition)
             }
         })
+
+        binding.btnAddTodo.setOnClickListener {
+            val intent = Intent(requireContext(), TodoDetailsActivity::class.java).apply {
+                putExtra("todo_id", -1)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun observeUiState() {

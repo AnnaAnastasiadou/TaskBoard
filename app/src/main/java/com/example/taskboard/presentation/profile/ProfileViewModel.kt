@@ -97,4 +97,8 @@ class ProfileViewModel @Inject constructor(
             authRepository.logout()
         }
     }
+
+    fun clearErrors() {
+        _uiState.update { it.copy(error = null, networkError = null) }
+    }
 }

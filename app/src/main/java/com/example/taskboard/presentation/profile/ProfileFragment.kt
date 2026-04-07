@@ -63,6 +63,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
                             (state.error ?: state.networkError)?.let { msg ->
                                 showErrorMessage(binding.root, msg)
+                                viewModel.clearErrors()
                             }
 
                         } else {

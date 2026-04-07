@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 abstract class BasePaginationViewModel<T> (
     protected val networkMonitor: NetworkMonitor
@@ -22,13 +21,11 @@ abstract class BasePaginationViewModel<T> (
     protected var isFetching = false
 
     init {
-        subscribeToData()
+        observeData()
         observeNetwork()
     }
-
     abstract fun loadNextBatch()
-
-    protected fun subscribeToData() {
+    protected fun observeData() {
         viewModelScope.launch {
             dataFlow.collect { list ->
                 _uiState.update { it.copy(data = list) }

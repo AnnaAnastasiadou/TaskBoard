@@ -203,4 +203,7 @@ class PostDetailsViewModel @Inject constructor(
             }
         }
     }
+    fun clearSnackbarMessage() {
+        _uiState.update { it.copy(snackbarMessage = null) }
+    }
 }

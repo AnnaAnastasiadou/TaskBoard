@@ -17,12 +17,12 @@ class TodosRepositoryImpl @Inject constructor(
     private val todoApi: TodoApi,
     private val todoDao: TodoDao
 ) : TodosRepository {
-    override fun getAllTodos(): Flow<List<TodoEntity>?> = todoDao.getTodos()
+    override fun observeTodos(): Flow<List<TodoEntity>> = todoDao.getTodos()
 
     override suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<TodoResponse> {
         val result = safeCall { todoApi.getTodos(limit, skip) }
         if (result is NetworkResult.Success) {
-            todoDao.insertTodos(result.data.todos.map{ it.toEntity()})
+            todoDao.insertTodos(result.data.todos.map { it.toEntity() })
         }
         return result
     }

@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.todos
+package com.example.taskboard.presentation.todos.list
 
 import com.example.taskboard.domain.model.Post
 

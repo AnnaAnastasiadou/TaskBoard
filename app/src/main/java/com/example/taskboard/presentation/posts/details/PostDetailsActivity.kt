@@ -98,8 +98,10 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
                     state.snackbarMessage?.let {
                         showErrorMessage(
                             rootView = binding.root,
-                            message = it
+                            message = it,
+                            isError = hasError
                         )
+                        viewModel.clearSnackbarMessage()
                     }
                 }
             }

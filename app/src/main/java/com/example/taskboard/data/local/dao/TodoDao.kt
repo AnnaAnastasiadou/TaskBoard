@@ -19,7 +19,10 @@ interface TodoDao {
 
     // READ
     @Query("SELECT * FROM todos")
-    fun getTodos(): Flow<List<TodoEntity>?>
+    fun getTodos(): Flow<List<TodoEntity>>
+
+    @Query("SELECT COUNT(*) FROM todos")
+    suspend fun getTodoCount(): Int
 
     @Query("SELECT * FROM todos WHERE id = :todoId")
     suspend fun getTodoById(todoId: Int): TodoEntity?

@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.taskboard.databinding.LoginActivityBinding
+import com.example.taskboard.presentation.common.showErrorMessage
 import com.example.taskboard.presentation.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,11 +37,8 @@ class LoginActivity : AppCompatActivity() {
                     binding.btnLogin.visibility = if (!state.isLoading) View.VISIBLE else View.GONE
                     binding.loadingIndicator.visibility = if (state.isLoading) View.VISIBLE else View.GONE
                     state.error?.let { errorMessage ->
-                        val snackBar = Snackbar.make(binding.loginRoot, errorMessage, Snackbar.LENGTH_SHORT)
-                        snackBar.setBackgroundTint(Color.RED)
-                        snackBar.setTextColor(Color.WHITE)
-                        snackBar.show()
                         viewModel.clearError()
+                        showErrorMessage(binding.root, errorMessage)
                     }
                     if (state.isLoggedIn) {
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))

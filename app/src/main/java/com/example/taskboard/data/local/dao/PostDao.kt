@@ -19,9 +19,6 @@ interface PostDao {
     @Query("SELECT * FROM posts")
     fun getPosts(): Flow<List<PostEntity>>
 
-    @Query("SELECT * FROM posts")
-    suspend fun getPostsOnce(): List<PostEntity>
-
     @Query("SELECT COUNT(*) FROM posts")
     suspend fun getPostCount(): Int
 

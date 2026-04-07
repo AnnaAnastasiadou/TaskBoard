@@ -17,7 +17,7 @@ import com.example.taskboard.presentation.auth.LoginActivity
 import com.example.taskboard.presentation.posts.details.PostDetailsActivity
 import com.example.taskboard.presentation.posts.list.PostsFragment
 import com.example.taskboard.presentation.profile.ProfileFragment
-import com.example.taskboard.presentation.todos.TodosFragment
+import com.example.taskboard.presentation.todos.list.TodosFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -100,16 +100,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         supportActionBar?.title = screen.title
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, targetFragment, screen.tag).commit()
 
-        val transaction = fragmentManager.beginTransaction()
-        activeFragment?.let { transaction.hide(it) }
-
-        if (!targetFragment.isAdded) {
-            transaction.add(R.id.fragment_container, targetFragment, screen.tag)
-        } else {
-            transaction.show(targetFragment)
-        }
-        transaction.commit()
-        activeFragment = targetFragment
     }
 }

@@ -32,6 +32,9 @@
         <activity
             android:name=".presentation.posts.details.PostDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.todos.details.TodoDetailsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

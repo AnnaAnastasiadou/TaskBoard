@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.todos
+package com.example.taskboard.presentation.todos.list
 
 import androidx.lifecycle.viewModelScope
 import com.example.taskboard.data.remote.NetworkResult
@@ -22,9 +22,8 @@ class TodosViewModel @Inject constructor(
 ) : BasePaginationViewModel<Todo>(networkMonitor) {
     private val _errorChannel = Channel<String>()
     val errorEvent = _errorChannel.receiveAsFlow()
-    override val dataFlow = todosRepository.getAllTodos().map { entities ->
-        entities?.map { it.toDomain() }
-            ?: emptyList()
+    override val dataFlow = todosRepository.observeTodos().map { entities ->
+        entities.map { it.toDomain() }
     }
 
     init {
@@ -72,13 +71,11 @@ class TodosViewModel @Inject constructor(
 
     fun toggleTodoStatus(id: Int) {
         viewModelScope.launch {
-            when(val result = todosRepository.toggleStatus(id)) {
+            when (val result = todosRepository.toggleStatus(id)) {
                 is NetworkResult.Success -> {}
                 is NetworkResult.Error -> _errorChannel.send(result.message)
                 is NetworkResult.NetworkError -> _errorChannel.send(result.message)
             }
-
         }
     }
-
 }

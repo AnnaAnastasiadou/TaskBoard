@@ -18,7 +18,7 @@ class PendingTodosAdapter(
         private val checkBox: MaterialCheckBox = itemView.findViewById(R.id.cbTodoStatus)
 
         fun bind(todo: Todo, onCheckBoxClicked: (Int) -> Unit) {
-            titleText.text = todo.todo
+            titleText.text = todo.title
             // When the card is reused by a different to-do it might appear checked/unchecked when it shouldn't
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = todo.completed

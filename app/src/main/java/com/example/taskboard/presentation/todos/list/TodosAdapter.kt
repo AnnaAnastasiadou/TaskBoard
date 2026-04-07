@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.todos
+package com.example.taskboard.presentation.todos.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +11,14 @@ import com.example.taskboard.domain.model.Todo
 
 class TodosAdapter(
     private var todosList: List<Todo>,
-    private var onTodoClick: (Int) -> Unit,
-    private var toggleTodoStatus: (Int) -> Unit
+    private var toggleTodoStatus: (Int) -> Unit,
+    private var onTodoClick: (Int) -> Unit
 ) : RecyclerView.Adapter<TodosAdapter.TodosViewHolder>() {
     class TodosViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val todoTitle: TextView = itemView.findViewById(R.id.tvTodoTitle)
         val checkbox: CheckBox = itemView.findViewById(R.id.cbTodoStatus)
         fun bind(todo: Todo, onTodoClick: (Int) -> Unit, toggleTodoStatus: (Int) -> Unit) {
-            todoTitle.text = todo.todo
+            todoTitle.text = todo.title
             checkbox.isChecked = todo.completed
 
             todoTitle.setOnClickListener {
@@ -29,17 +29,19 @@ class TodosAdapter(
                 toggleTodoStatus(todo.id)
                 checkbox.isChecked = todo.completed
             }
+
+            itemView.setOnClickListener { onTodoClick(todo.id)}
         }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): TodosAdapter.TodosViewHolder {
+    ): TodosViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
-        return TodosAdapter.TodosViewHolder(view)
+        return TodosViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: TodosAdapter.TodosViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TodosViewHolder, position: Int) {
         holder.bind(todosList[position], onTodoClick, toggleTodoStatus)
     }
 
