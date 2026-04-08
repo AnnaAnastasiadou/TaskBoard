@@ -7,7 +7,8 @@ import com.example.taskboard.data.remote.response.PostResponse
 import kotlinx.coroutines.flow.Flow
 
 interface PostsRepository {
-    fun observePosts(): Flow<List<PostEntity>>
+    fun observeLocalPosts(): Flow<List<PostEntity>>
+    fun observeRemotePosts(): Flow<List<PostEntity>>
     suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse>
     suspend fun getPostById(id: Int): PostEntity?
     suspend fun updatePost(id: Int, body: Map<String, Any>): NetworkResult<PostDto>

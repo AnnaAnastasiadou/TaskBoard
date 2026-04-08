@@ -4,9 +4,10 @@ import com.example.taskboard.data.remote.dto.PostDto
 import com.example.taskboard.data.local.entity.PostEntity
 import com.example.taskboard.data.remote.dto.ReactionsDto
 
-fun PostDto.toEntity(lastUpdatedAt: Long? = null): PostEntity {
+fun PostDto.toEntity(lastUpdatedAt: Long? = null, isLocal: Boolean = false): PostEntity {
     return PostEntity(
         id = id,
+        isLocal = isLocal,
         userId = userId,
         title = title,
         body = body,

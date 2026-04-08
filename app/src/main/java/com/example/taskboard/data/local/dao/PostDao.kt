@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PostDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     suspend fun insertPosts(posts: List<PostEntity>)
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
@@ -18,6 +18,15 @@ interface PostDao {
 
     @Query("SELECT * FROM posts")
     fun getPosts(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM posts WHERE isLocal = 1 ORDER BY id DESC")
+    fun observeLocalPosts(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM posts WHERE isLocal = 0 ORDER BY id DESC")
+    fun observeRemotePosts(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM posts ORDER BY isLocal DESC, id DESC")
+    fun getAllPostsSorted(): Flow<List<PostEntity>>
 
     @Query("SELECT COUNT(*) FROM posts")
     suspend fun getPostCount(): Int

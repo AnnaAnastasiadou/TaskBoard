@@ -1,9 +1,8 @@
 package com.example.taskboard.domain.model
 
-import androidx.room.PrimaryKey
-
 data class Post(
     val id: Int,
+    val isLocal: Boolean = false,
     val userId: Int,
     val title: String,
     val body: String,

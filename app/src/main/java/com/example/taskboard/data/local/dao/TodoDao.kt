@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.taskboard.data.local.entity.PostEntity
 import com.example.taskboard.data.local.entity.TodoEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -20,6 +21,12 @@ interface TodoDao {
     // READ
     @Query("SELECT * FROM todos")
     fun getTodos(): Flow<List<TodoEntity>>
+
+    @Query("SELECT * FROM todos WHERE isLocal = 1 ORDER BY id DESC")
+    fun observeLocalTodos(): Flow<List<TodoEntity>>
+
+    @Query("SELECT * FROM todos WHERE isLocal = 0 ORDER BY id DESC")
+    fun observeRemoteTodos(): Flow<List<TodoEntity>>
 
     @Query("SELECT COUNT(*) FROM todos")
     suspend fun getTodoCount(): Int

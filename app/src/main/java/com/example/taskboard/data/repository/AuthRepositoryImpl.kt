@@ -75,8 +75,10 @@ class AuthRepositoryImpl @Inject constructor(
         if (cachedToken != null) return true
 
         val persistedAccessToken = sharedPreferencesDatasource.getAccessToken()
-        if (persistedAccessToken != null) {
+        val userId = sharedPreferencesDatasource.getUserId()
+        if (persistedAccessToken != null && userId != null) {
             sessionProvider.setAccessToken(persistedAccessToken)
+            sessionProvider.setUserId(userId)
             return true
         }
 

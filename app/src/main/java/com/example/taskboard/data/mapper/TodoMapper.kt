@@ -3,9 +3,10 @@ package com.example.taskboard.data.mapper
 import com.example.taskboard.data.remote.dto.TodoDto
 import com.example.taskboard.data.local.entity.TodoEntity
 
-fun TodoDto.toEntity(lastUpdated: Long? = null): TodoEntity {
+fun TodoDto.toEntity(lastUpdated: Long? = null, isLocal: Boolean = false): TodoEntity {
     return TodoEntity(
         id = id,
+        isLocal = isLocal,
         userId = userId,
         todo = todo,
         completed = completed,

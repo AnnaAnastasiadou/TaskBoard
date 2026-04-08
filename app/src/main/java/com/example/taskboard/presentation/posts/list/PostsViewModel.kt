@@ -19,7 +19,12 @@ class PostsViewModel @Inject constructor(
     networkMonitor: NetworkMonitor
 ) : BasePaginationViewModel<Post>(networkMonitor) {
 
-    override val dataFlow = postsRepository.observePosts().map { entities ->
+    override val localDataFlow = postsRepository.observeLocalPosts()
+        .map { entities ->
+        entities.map { it.toDomain() }
+    }
+    override val remoteDataFlow = postsRepository.observeRemotePosts()
+        .map { entities ->
         entities.map { it.toDomain() }
     }
 
@@ -33,7 +38,8 @@ class PostsViewModel @Inject constructor(
             isFetching = true
             _uiState.update { it.copy(isLoading = true) }
 
-            when (val result = postsRepository.refreshPosts(pageSize, currentSkip)) {
+            val result = postsRepository.refreshPosts(pageSize, currentSkip)
+            when (result) {
                 is NetworkResult.Success -> {
                     currentSkip += pageSize
                     _uiState.update {

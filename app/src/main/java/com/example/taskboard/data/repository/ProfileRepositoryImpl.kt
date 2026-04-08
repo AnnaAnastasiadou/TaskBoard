@@ -8,7 +8,9 @@ import com.example.taskboard.data.remote.api.ProfileApi
 import com.example.taskboard.data.remote.dto.UserDto
 import com.example.taskboard.domain.model.User
 import com.example.taskboard.domain.repository.ProfileRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
@@ -18,14 +20,16 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun refreshUserProfile(): NetworkResult<UserDto> {
         val response = safeCall{profileApi.getCurrentUser()}
         if (response is NetworkResult.Success) {
-            profileDao.insertUser(response.data.toEntity())
+            withContext(Dispatchers.IO) {
+                profileDao.insertUser(response.data.toEntity())
+            }
         }
         return response
     }
 
     override fun getUserProfile(): Flow<UserEntity?> = profileDao.getCurrentUser()
 
-    override suspend fun getUserId(): Int = profileDao.getUserId()
+    override suspend fun getUserId(): Int = withContext(Dispatchers.IO) { profileDao.getUserId() }
 
-    override suspend fun isProfileDbEmpty(): Boolean = profileDao.getUserCount() == 0
+    override suspend fun isProfileDbEmpty(): Boolean = withContext(Dispatchers.IO) { profileDao.getUserCount() == 0 }
 }

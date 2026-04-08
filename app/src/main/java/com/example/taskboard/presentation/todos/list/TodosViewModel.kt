@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.map
 
 @HiltViewModel
 class TodosViewModel @Inject constructor(
@@ -22,9 +23,15 @@ class TodosViewModel @Inject constructor(
 ) : BasePaginationViewModel<Todo>(networkMonitor) {
     private val _errorChannel = Channel<String>()
     val errorEvent = _errorChannel.receiveAsFlow()
-    override val dataFlow = todosRepository.observeTodos().map { entities ->
-        entities.map { it.toDomain() }
-    }
+
+    override val localDataFlow = todosRepository.observeLocalTodos()
+        .map { entities ->
+            entities.map { it.toDomain() }
+        }
+    override val remoteDataFlow = todosRepository.observeRemoteTodos()
+        .map { entities ->
+            entities.map { it.toDomain() }
+        }
 
     init {
         loadNextBatch()

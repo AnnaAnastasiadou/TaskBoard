@@ -8,6 +8,7 @@ import com.example.taskboard.domain.model.Post
 fun PostEntity.toDomain(): Post {
     return Post(
         id = id,
+        isLocal = isLocal,
         userId = userId,
         title = title,
         body = body,

@@ -7,13 +7,43 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
+import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.model.Todo
+import com.example.taskboard.presentation.posts.list.PostsAdapter
+import com.example.taskboard.presentation.posts.list.PostsAdapter.HeaderViewHolder
+import com.example.taskboard.presentation.posts.list.PostsAdapter.PostsViewHolder
 
 class TodosAdapter(
-    private var todosList: List<Todo>,
+    private var items: List<Any>,
     private var toggleTodoStatus: (Int) -> Unit,
     private var onTodoClick: (Int) -> Unit
-) : RecyclerView.Adapter<TodosAdapter.TodosViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_TODO = 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (items[position] is String) TYPE_HEADER else TYPE_TODO
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = items[position]
+        when (holder) {
+            is HeaderViewHolder -> holder.bind(item as String)
+            is TodosViewHolder -> holder.bind(
+                item as Todo,
+                onTodoClick,
+                toggleTodoStatus
+            )
+        }
+    }
+
+    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val title: TextView = view.findViewById(R.id.tv_header_title)
+        fun bind(text: String) {title.text = text}
+    }
+
     class TodosViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val todoTitle: TextView = itemView.findViewById(R.id.tvTodoTitle)
         val checkbox: CheckBox = itemView.findViewById(R.id.cbTodoStatus)
@@ -30,27 +60,33 @@ class TodosAdapter(
                 checkbox.isChecked = todo.completed
             }
 
-            itemView.setOnClickListener { onTodoClick(todo.id)}
+            itemView.setOnClickListener { onTodoClick(todo.id) }
         }
     }
 
     override fun onCreateViewHolder(
-        parent: ViewGroup, viewType: Int
-    ): TodosViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
-        return TodosViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: TodosViewHolder, position: Int) {
-        holder.bind(todosList[position], onTodoClick, toggleTodoStatus)
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_HEADER -> {
+                val view = inflater.inflate(R.layout.item_header, parent, false)
+                HeaderViewHolder(view)
+            }
+            else -> {
+                val view = inflater.inflate(R.layout.item_todo, parent, false)
+                TodosViewHolder(view)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
-        return todosList.size
+        return items.size
     }
 
-    fun updateData(newTodoList: List<Todo>) {
-        this.todosList = newTodoList
+    fun updateData(newList: List<Any>) {
+        this.items = newList
         notifyDataSetChanged()
     }
 }

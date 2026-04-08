@@ -7,7 +7,8 @@ import com.example.taskboard.data.remote.response.TodoResponse
 import kotlinx.coroutines.flow.Flow
 
 interface TodosRepository {
-    fun observeTodos(): Flow<List<TodoEntity>>
+    fun observeLocalTodos(): Flow<List<TodoEntity>>
+    fun observeRemoteTodos(): Flow<List<TodoEntity>>
     suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<TodoResponse>
     suspend fun getTodoById(id: Int): TodoEntity?
     suspend fun addTodo(todo: TodoDto): NetworkResult<TodoDto>

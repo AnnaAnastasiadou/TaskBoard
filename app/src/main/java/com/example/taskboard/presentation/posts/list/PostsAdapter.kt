@@ -12,9 +12,31 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 class PostsAdapter(
-    private var postsList: List<Post>,
+    private var items: List<Any>,
     private val onPostClick: (Int) -> Unit
-) : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_POST = 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (items[position] is String) TYPE_HEADER else TYPE_POST
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = items[position]
+        when (holder) {
+            is HeaderViewHolder -> holder.bind(item as String)
+            is PostsViewHolder -> holder.bind(item as Post, onPostClick)
+        }
+    }
+
+    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val title: TextView = view.findViewById(R.id.tv_header_title)
+        fun bind(text: String) {title.text = text}
+    }
     class PostsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleText: TextView = itemView.findViewById(R.id.post_title)
         val bodyText: TextView = itemView.findViewById(R.id.post_body)
@@ -57,26 +79,26 @@ class PostsAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): PostsViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
-        return PostsViewHolder(view)
-    }
-
-    override fun onBindViewHolder(
-        holder: PostsViewHolder,
-        position: Int
-    ) {
-        holder.bind(postsList[position], onPostClick)
+    ): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_HEADER -> {
+                val view = inflater.inflate(R.layout.item_header, parent, false)
+                HeaderViewHolder(view)
+            }
+            else -> {
+                val view = inflater.inflate(R.layout.item_post, parent, false)
+                PostsViewHolder(view)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
-        return postsList.size
+        return items.size
     }
 
-    fun updateData(newPostsList: List<Post>?) {
-        if (newPostsList != null) {
-            this.postsList = newPostsList
-            notifyDataSetChanged()
-        }
+    fun updateData(newList: List<Any>) {
+        this.items = newList
+        notifyDataSetChanged()
     }
 }

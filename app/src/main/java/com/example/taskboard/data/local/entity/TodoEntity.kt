@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class TodoEntity (
     @PrimaryKey(autoGenerate = true)
     val id: Int,
+    val isLocal: Boolean = false,
     val userId: Int,
     val todo: String,
     val completed: Boolean,

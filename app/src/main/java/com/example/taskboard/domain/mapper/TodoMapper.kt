@@ -7,6 +7,7 @@ import com.example.taskboard.domain.model.Todo
 fun TodoEntity.toDomain(): Todo {
     return Todo(
         id = id,
+        isLocal = isLocal,
         userId = userId,
         title = todo,
         completed = completed,

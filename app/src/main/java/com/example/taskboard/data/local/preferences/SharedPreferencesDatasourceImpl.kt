@@ -27,6 +27,10 @@ class SharedPreferencesDatasourceImpl @Inject constructor(@ApplicationContext co
         preferences.edit { putInt(KEY_USER_ID, userId) }
     }
 
+    override fun getUserId(): Int? {
+        return preferences.getInt(KEY_USER_ID, 0)
+    }
+
     override fun getAccessToken(): String? {
         return preferences.getString(KEY_ACCESS_TOKEN, null)
     }

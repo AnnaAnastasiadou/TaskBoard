@@ -88,7 +88,17 @@ class PostsFragment : Fragment(R.layout.post_list_fragment) {
                             listLoadStateAdapter.setState(ListLoadState.Hidden)
                         }
                     }
-                    postsAdapter.updateData(newPostsList = state.data)
+
+                    val displayList = mutableListOf<Any>()
+                    if (!state.localData.isNullOrEmpty()) {
+                        displayList.add("Local Posts")
+                        displayList.addAll(state.localData)
+                    }
+                    if (!state.remoteData.isNullOrEmpty()) {
+                        displayList.add("Remote Posts")
+                        displayList.addAll(state.remoteData)
+                    }
+                    postsAdapter.updateData(displayList)
                 }
             }
         }

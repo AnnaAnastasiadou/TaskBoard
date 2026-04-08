@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 abstract class BasePaginationViewModel<T> (
     protected val networkMonitor: NetworkMonitor
 ) : ViewModel() {
-    abstract val dataFlow: Flow<List<T>>
+    abstract val localDataFlow: Flow<List<T>>
+    abstract val remoteDataFlow: Flow<List<T>>
     protected val _uiState = MutableStateFlow(BaseUiState<T>())
     val uiState = _uiState.asStateFlow()
 
@@ -21,14 +22,23 @@ abstract class BasePaginationViewModel<T> (
     protected var isFetching = false
 
     init {
-        observeData()
+        observeLocalData()
+        observeRemoteData()
         observeNetwork()
     }
     abstract fun loadNextBatch()
-    protected fun observeData() {
+    protected fun observeLocalData() {
         viewModelScope.launch {
-            dataFlow.collect { list ->
-                _uiState.update { it.copy(data = list) }
+            localDataFlow.collect { list ->
+                _uiState.update { it.copy(localData = list) }
+            }
+        }
+    }
+
+    protected fun observeRemoteData() {
+        viewModelScope.launch {
+            remoteDataFlow.collect { list ->
+                _uiState.update { it.copy(remoteData = list) }
             }
         }
     }
@@ -46,7 +56,13 @@ abstract class BasePaginationViewModel<T> (
 
     fun onScrollReachedIndex(index: Int) {
         val hasError = uiState.value.error != null || uiState.value.networkError != null
-        val totalItems = uiState.value.data?.size ?: 0
+
+        val localList = uiState.value.localData ?: emptyList()
+        val remoteList = uiState.value.remoteData ?: emptyList()
+        val localHeader = if (localList.isNotEmpty()) 1 else 0
+        val remoteHeader = if (remoteList.isNotEmpty()) 1 else 0
+        val totalItems = localList.size + remoteList.size + localHeader + remoteHeader
+
         if (index >= totalItems - 5 && !isFetching && !hasError) {
             loadNextBatch()
         }

@@ -83,11 +83,6 @@ class MainActivity : AppCompatActivity() {
             switchFragment(Screen.Posts)
         }
 
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.updatePadding(top = systemBars.top)
-//            insets
-//        }
     }
 
     fun switchFragment(screen: Screen) {
@@ -100,8 +95,17 @@ class MainActivity : AppCompatActivity() {
             }
 
         supportActionBar?.title = screen.title
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, targetFragment, screen.tag).commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        activeFragment?.let{transaction.hide(it)}
+
+        if(!targetFragment.isAdded) {
+            transaction.add(R.id.fragment_container, targetFragment, screen.tag)
+        } else {
+            transaction.show(targetFragment)
+        }
+        transaction.commit()
+        activeFragment = targetFragment
+//            .replace(R.id.fragment_container, targetFragment, screen.tag).commit()
 
     }
 }

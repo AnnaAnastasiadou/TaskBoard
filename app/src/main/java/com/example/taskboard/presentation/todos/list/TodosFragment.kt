@@ -85,7 +85,16 @@ class TodosFragment : Fragment(R.layout.todo_list_fragment) {
                         else -> listLoadStateAdapter.setState(ListLoadState.Hidden)
                     }
 
-                    todosAdapter.updateData(state.data ?: emptyList())
+                    val displayList = mutableListOf<Any>()
+                    if (!state.localData.isNullOrEmpty()) {
+                        displayList.add("Local Todos")
+                        displayList.addAll(state.localData)
+                    }
+                    if (!state.remoteData.isNullOrEmpty()) {
+                        displayList.add("Remote Todos")
+                        displayList.addAll(state.remoteData)
+                        todosAdapter.updateData(displayList)
+                    }
                 }
             }
         }
