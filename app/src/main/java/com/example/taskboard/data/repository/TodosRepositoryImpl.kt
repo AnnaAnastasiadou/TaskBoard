@@ -40,9 +40,9 @@ class TodosRepositoryImpl @Inject constructor(
         if (response is NetworkResult.Success) {
             withContext(Dispatchers.IO) {
                 val existingTodo = todoDao.getTodoById(id)
-                val isLocal = existingTodo?.isLocal ?: false
                 val updatedEntity = response.data.toEntity().copy(
-                    isLocal = isLocal,
+                    isLocal = existingTodo?.isLocal ?: false,
+                    completed = (body["completed"] as Boolean?) ?: (existingTodo?.completed ?: false),
                     updatedAt = getCurrentDate()
                 )
                 todoDao.updateTodo(updatedEntity)
