@@ -1,10 +1,8 @@
 package com.example.taskboard.presentation.auth
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -13,7 +11,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.taskboard.databinding.LoginActivityBinding
 import com.example.taskboard.presentation.common.showErrorMessage
 import com.example.taskboard.presentation.main.MainActivity
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

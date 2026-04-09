@@ -7,11 +7,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
-import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.model.Todo
-import com.example.taskboard.presentation.posts.list.PostsAdapter
-import com.example.taskboard.presentation.posts.list.PostsAdapter.HeaderViewHolder
-import com.example.taskboard.presentation.posts.list.PostsAdapter.PostsViewHolder
 
 class TodosAdapter(
     private var items: List<Any>,

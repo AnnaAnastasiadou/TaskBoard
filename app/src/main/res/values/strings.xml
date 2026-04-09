@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">Task Board</string>
+    <string name="posts">Posts</string>
+    <string name="todos">Todos</string>
+    <string name="profile">Profile</string>
+    <string name="likes">likes</string>
+    <string name="dislikes">dislikes</string>
+    <string name="updated_at">Updated at</string>
+    <string name="tag">Tag</string>
+    <string name="try_again">Try Again</string>
+    <string name="welcome">Welcome</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="post_title">Post Title</string>
+    <string name="post_body_hint">What\'s on your mind?</string>
+    <string name="tags">Tags</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_post">Delete Post</string>
+    <string name="add_post">Add Post</string>
+    <string name="profile_image">profile image</string>
+    <string name="contact_information">Contact Information</string>
+    <string name="email">Email:</string>
+    <string name="phone_number">Phone Number:</string>
+    <string name="logout">Logout</string>
+    <string name="add_new_todo">Add New Todo</string>
+    <string name="todo">Todo</string>
+    <string name="unable_to_retrieve_data">Unable to retrieve data</string>
 </resources>

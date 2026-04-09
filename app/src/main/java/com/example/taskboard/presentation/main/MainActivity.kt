@@ -3,9 +3,6 @@ package com.example.taskboard.presentation.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -14,7 +11,6 @@ import com.example.taskboard.R
 import com.example.taskboard.databinding.ActivityMainBinding
 import com.example.taskboard.domain.repository.AuthRepository
 import com.example.taskboard.presentation.auth.LoginActivity
-import com.example.taskboard.presentation.posts.details.PostDetailsActivity
 import com.example.taskboard.presentation.posts.list.PostsFragment
 import com.example.taskboard.presentation.profile.ProfileFragment
 import com.example.taskboard.presentation.todos.list.TodosFragment

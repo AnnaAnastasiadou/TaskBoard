@@ -9,7 +9,6 @@ import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.mapper.toDto
 import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.repository.PostsRepository
-import com.example.taskboard.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -148,19 +147,19 @@ class PostDetailsViewModel @Inject constructor(
             body = requestBody
         ) else postsRepository.addPost(currentPost.toDto())
 
-        _uiState.update { it.copy(status = ScreenStatus.SAVING, snackbarMessage = "Saving...") }
+        _uiState.update { it.copy(status = ScreenStatus.SAVING, snackBarMessage = "Saving...") }
         when (result) {
             is NetworkResult.Error -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
 
             is NetworkResult.NetworkError -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
 
@@ -168,7 +167,7 @@ class PostDetailsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         status = ScreenStatus.IDLE,
-                        snackbarMessage = null
+                        snackBarMessage = null
                     )
                 }
                 _uiEvent.send(PostUiEvent.NavigateBack)
@@ -178,12 +177,12 @@ class PostDetailsViewModel @Inject constructor(
 
     suspend fun deletePost() {
         val post = uiState.value.data ?: return
-        _uiState.update { it.copy(status = ScreenStatus.DELETING, snackbarMessage = "Deleting...") }
+        _uiState.update { it.copy(status = ScreenStatus.DELETING, snackBarMessage = "Deleting...") }
         when (val result = postsRepository.deletePost(post)) {
             is NetworkResult.Success -> {
                 _uiState.update {
                     it.copy(
-                        snackbarMessage = null
+                        snackBarMessage = null
                     )
                 }
                 _uiEvent.send(PostUiEvent.NavigateBack)
@@ -192,19 +191,19 @@ class PostDetailsViewModel @Inject constructor(
             is NetworkResult.NetworkError -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
 
             is NetworkResult.Error -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
         }
     }
-    fun clearSnackbarMessage() {
-        _uiState.update { it.copy(snackbarMessage = null) }
+    fun clearSnackBarMessage() {
+        _uiState.update { it.copy(snackBarMessage = null) }
     }
 }

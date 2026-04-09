@@ -6,7 +6,7 @@ data class PostDetailsUiState(
     val status: ScreenStatus = ScreenStatus.IDLE,
     val data: Post? = null,
     val validationError: PostValidationError = PostValidationError(),
-    val snackbarMessage: String? = null
+    val snackBarMessage: String? = null
 )
 
 data class PostValidationError(

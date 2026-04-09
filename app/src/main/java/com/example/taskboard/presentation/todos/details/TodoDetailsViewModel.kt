@@ -9,7 +9,6 @@ import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.mapper.toDto
 import com.example.taskboard.domain.model.Todo
 import com.example.taskboard.domain.repository.TodosRepository
-import com.example.taskboard.presentation.posts.details.PostUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,19 +88,19 @@ class TodoDetailsViewModel @Inject constructor(
             requestBody
         ) else todosRepository.addTodo(currentTodo.toDto())
 
-        _uiState.update { it.copy(status = ScreenStatus.SAVING, snackbarMessage = "Saving...") }
+        _uiState.update { it.copy(status = ScreenStatus.SAVING, snackBarMessage = "Saving...") }
         when (result) {
             is NetworkResult.Error -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
 
             is NetworkResult.NetworkError -> _uiState.update {
                 it.copy(
                     status = ScreenStatus.IDLE,
-                    snackbarMessage = result.message
+                    snackBarMessage = result.message
                 )
             }
 
@@ -109,7 +108,7 @@ class TodoDetailsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         status = ScreenStatus.IDLE,
-                        snackbarMessage = null
+                        snackBarMessage = null
                     )
                 }
                 _uiEvent.send(TodoUiEvent.NavigateBack)
@@ -120,19 +119,19 @@ class TodoDetailsViewModel @Inject constructor(
 
     suspend fun deleteTodo() {
         val todo = uiState.value.data ?: return
-        _uiState.update { it.copy(status = ScreenStatus.DELETING, snackbarMessage = "Deleting...") }
+        _uiState.update { it.copy(status = ScreenStatus.DELETING, snackBarMessage = "Deleting...") }
         when (val result = todosRepository.deleteTodo(todo)) {
             is NetworkResult.Success -> {
-                _uiState.update { it.copy(snackbarMessage = null) }
+                _uiState.update { it.copy(snackBarMessage = null) }
                 _uiEvent.send(TodoUiEvent.NavigateBack)
             }
 
             is NetworkResult.Error -> _uiState.update {
-                it.copy(status = ScreenStatus.IDLE, snackbarMessage = result.message)
+                it.copy(status = ScreenStatus.IDLE, snackBarMessage = result.message)
             }
 
             is NetworkResult.NetworkError -> _uiState.update {
-                it.copy(status = ScreenStatus.IDLE, snackbarMessage = result.message)
+                it.copy(status = ScreenStatus.IDLE, snackBarMessage = result.message)
             }
         }
     }
@@ -145,7 +144,7 @@ class TodoDetailsViewModel @Inject constructor(
         loadTodoDetails()
     }
 
-    fun clearSnackbarMessage() {
-        _uiState.update { it.copy(snackbarMessage = null)}
+    fun clearSnackBarMessage() {
+        _uiState.update { it.copy(snackBarMessage = null)}
     }
 }

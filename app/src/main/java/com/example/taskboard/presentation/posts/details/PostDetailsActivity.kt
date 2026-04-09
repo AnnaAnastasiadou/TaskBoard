@@ -58,7 +58,7 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
                     binding.stateLayout.btnRetry.isVisible = hasError
                     binding.stateLayout.tvError.isVisible = hasError
                     if (hasError) {
-                        binding.stateLayout.tvError.text = "Unable to retrieve data"
+                        binding.stateLayout.tvError.text = getString(R.string.unable_to_retrieve_data)
                     }
 
                     val isBusy = state.status == ScreenStatus.SAVING || state.status == ScreenStatus.DELETING
@@ -95,13 +95,13 @@ class PostDetailsActivity : AppCompatActivity(R.layout.post_details_activity) {
                         }
                     }
 
-                    state.snackbarMessage?.let {
+                    state.snackBarMessage?.let {
                         showErrorMessage(
                             rootView = binding.root,
                             message = it,
                             isError = hasError
                         )
-                        viewModel.clearSnackbarMessage()
+                        viewModel.clearSnackBarMessage()
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package com.example.taskboard.presentation.todos.list
 
-import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.model.Todo
 
 data class TodosUiState(

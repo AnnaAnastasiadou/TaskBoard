@@ -52,7 +52,7 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Todo">
+                android:hint="@string/todo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_title"
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Cancel" />
+                    android:text="@string/cancel" />
 
                 <View
                     android:id="@+id/spacer"
@@ -105,7 +105,7 @@
                     style="@style/Widget.Material3.Button.IconButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="Delete Post"
+                    android:contentDescription="@string/delete_post"
                     app:icon="@drawable/ic_delete"
                     app:iconTint="?attr/colorError"
                     app:rippleColor="#20FF0000"

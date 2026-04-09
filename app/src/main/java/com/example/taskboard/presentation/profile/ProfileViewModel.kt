@@ -2,7 +2,6 @@ package com.example.taskboard.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskboard.data.local.entity.UserEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
 import com.example.taskboard.domain.model.User

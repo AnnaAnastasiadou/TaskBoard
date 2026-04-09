@@ -1,15 +1,11 @@
 package com.example.taskboard.presentation.posts.list
 
-import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.domain.mapper.toDomain
-import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.repository.PostsRepository
 import com.example.taskboard.presentation.common.NetworkMonitor
-import com.example.taskboard.presentation.common.pagination.BasePaginationViewModel
-import com.example.taskboard.presentation.common.pagination.BaseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +35,7 @@ class PostsViewModel @Inject constructor(
     private var currentSkip = 0
     private var pageSize = 30
     private var isFetching = false
+    private var totalItems: Int? = null
 
     init {
         observeLocalData()
@@ -80,8 +77,7 @@ class PostsViewModel @Inject constructor(
             isFetching = true
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = postsRepository.refreshPosts(pageSize, currentSkip)
-            when (result) {
+            when (val result = postsRepository.refreshPosts(pageSize, currentSkip)) {
                 is NetworkResult.Success -> {
                     currentSkip += pageSize
                     _uiState.update {
@@ -90,6 +86,9 @@ class PostsViewModel @Inject constructor(
                             error = null,
                             networkError = null
                         )
+                    }
+                    if (totalItems == null) {
+                        totalItems = result.data.total
                     }
                 }
 
@@ -115,15 +114,17 @@ class PostsViewModel @Inject constructor(
     }
 
     fun onScrollReachedIndex(index: Int) {
+        if (totalItems == null) return
         val hasError = uiState.value.error != null || uiState.value.networkError != null
 
-        val localList = uiState.value.localData ?: emptyList()
-        val remoteList = uiState.value.remoteData ?: emptyList()
-        val localHeader = if (localList.isNotEmpty()) 1 else 0
-        val remoteHeader = if (remoteList.isNotEmpty()) 1 else 0
-        val totalItems = localList.size + remoteList.size + localHeader + remoteHeader
+        val localItems = uiState.value.localData?.size ?: 0
+        val remoteItems = uiState.value.remoteData?.size ?: 0
+        val hasNext = totalItems!! > (localItems + remoteItems)
+        val localHeader = if (localItems != 0) 1 else 0
+        val remoteHeader = if (remoteItems != 0) 1 else 0
+        val totalItems = localItems + remoteItems + localHeader + remoteHeader
 
-        if (index >= totalItems - 5 && !isFetching && !hasError) {
+        if (index >= totalItems - 5 && !isFetching && !hasError && hasNext) {
             loadNextBatch()
         }
     }

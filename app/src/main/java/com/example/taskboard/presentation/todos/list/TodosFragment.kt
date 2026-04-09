@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskboard.R
 import com.example.taskboard.databinding.TodoListFragmentBinding
-import com.example.taskboard.presentation.common.pagination.ListLoadState
-import com.example.taskboard.presentation.common.pagination.ListLoadStateAdapter
+import com.example.taskboard.presentation.common.ListLoadState
+import com.example.taskboard.presentation.common.ListLoadStateAdapter
 import com.example.taskboard.presentation.common.showErrorMessage
-import com.example.taskboard.presentation.posts.details.PostDetailsActivity
 import com.example.taskboard.presentation.todos.details.TodoDetailsActivity
-import com.example.taskboard.presentation.todos.list.TodosViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

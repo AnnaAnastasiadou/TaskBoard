@@ -2,11 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_posts"
-        android:icon="@drawable/ic_posts"/>
+        android:icon="@drawable/ic_posts"
+        android:title="@string/posts" />
     <item
         android:id="@+id/navigation_todos"
-        android:icon="@drawable/ic_todos"/>
+        android:icon="@drawable/ic_todos"
+        android:title="@string/todos" />
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_profile"/>
+        android:icon="@drawable/ic_profile"
+        android:title="@string/profile" />
 </menu>

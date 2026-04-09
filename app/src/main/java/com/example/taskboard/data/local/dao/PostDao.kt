@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PostDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPosts(posts: List<PostEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addPost(post: PostEntity)
 
     @Query("SELECT * FROM posts")

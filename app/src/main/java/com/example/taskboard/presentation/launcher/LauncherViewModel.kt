@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class LauncherViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
+class LauncherViewModel @Inject constructor(authRepository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<LauncherUiState> = authRepository.isLoggedIn.map { loggedIn ->
         LauncherUiState(loggedIn, false)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = LauncherUiState(authRepository.isLoggedIn.value, true)
     )
 }

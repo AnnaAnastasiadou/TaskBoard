@@ -1,4 +1,4 @@
-package com.example.taskboard.presentation.common.pagination
+package com.example.taskboard.presentation.common
 
 import android.view.LayoutInflater
 import android.view.View
