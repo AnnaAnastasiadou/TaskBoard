@@ -119,8 +119,9 @@ class TodoDetailsViewModel @Inject constructor(
     }
 
     suspend fun deleteTodo() {
+        val todo = uiState.value.data ?: return
         _uiState.update { it.copy(status = ScreenStatus.DELETING, snackbarMessage = "Deleting...") }
-        when (val result = todosRepository.deleteTodo(todoId)) {
+        when (val result = todosRepository.deleteTodo(todo)) {
             is NetworkResult.Success -> {
                 _uiState.update { it.copy(snackbarMessage = null) }
                 _uiEvent.send(TodoUiEvent.NavigateBack)

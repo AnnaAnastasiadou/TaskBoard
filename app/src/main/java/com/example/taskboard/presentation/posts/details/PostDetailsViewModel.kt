@@ -177,8 +177,9 @@ class PostDetailsViewModel @Inject constructor(
     }
 
     suspend fun deletePost() {
+        val post = uiState.value.data ?: return
         _uiState.update { it.copy(status = ScreenStatus.DELETING, snackbarMessage = "Deleting...") }
-        when (val result = postsRepository.deletePost(postId)) {
+        when (val result = postsRepository.deletePost(post)) {
             is NetworkResult.Success -> {
                 _uiState.update {
                     it.copy(

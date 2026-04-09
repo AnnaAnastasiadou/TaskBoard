@@ -9,6 +9,8 @@ import com.example.taskboard.data.remote.api.TodoApi
 import com.example.taskboard.data.remote.dto.TodoDto
 import com.example.taskboard.data.remote.response.PostResponse
 import com.example.taskboard.data.remote.response.TodoResponse
+import com.example.taskboard.domain.mapper.toDto
+import com.example.taskboard.domain.model.Todo
 import com.example.taskboard.domain.repository.TodosRepository
 import com.example.taskboard.presentation.common.getCurrentDate
 import kotlinx.coroutines.flow.Flow
@@ -25,12 +27,14 @@ class TodosRepositoryImpl @Inject constructor(
         print(totalTodosOnServer)
         println(skip)
         if (totalTodosOnServer != null && skip >= totalTodosOnServer!!) {
-            return NetworkResult.Success(TodoResponse(
-                todos = emptyList(),
-                total = totalTodosOnServer!!,
-                skip = skip,
-                limit = limit
-            ))
+            return NetworkResult.Success(
+                TodoResponse(
+                    todos = emptyList(),
+                    total = totalTodosOnServer!!,
+                    skip = skip,
+                    limit = limit
+                )
+            )
         }
         val result = safeCall { todoApi.getTodos(limit, skip) }
         if (result is NetworkResult.Success) {
@@ -43,13 +47,20 @@ class TodosRepositoryImpl @Inject constructor(
     override suspend fun getTodoById(id: Int): TodoEntity? = todoDao.getTodoById(id)
 
     override suspend fun updateTodo(id: Int, body: Map<String, Any>): NetworkResult<TodoDto> {
+        val existingTodo =
+            todoDao.getTodoById(id) ?: return NetworkResult.Error("Couldn't find todo with id $id")
+        if (existingTodo.isLocal) {
+            val updatedLocalEntity = existingTodo.copy(
+                todo = body["todo"] as? String ?: existingTodo.todo,
+                updatedAt = getCurrentDate()
+            )
+            todoDao.updateTodo(updatedLocalEntity)
+            return NetworkResult.Success(updatedLocalEntity.toDto())
+        }
         val response = safeCall { todoApi.updateTodo(id, body) }
         if (response is NetworkResult.Success) {
-            val existingTodo = todoDao.getTodoById(id)
             val updatedEntity = response.data.toEntity().copy(
-                isLocal = existingTodo?.isLocal ?: false,
-                completed = (body["completed"] as Boolean?) ?: (existingTodo?.completed
-                    ?: false),
+                completed = (body["completed"] as Boolean?) ?: (existingTodo.completed),
                 updatedAt = getCurrentDate()
             )
             todoDao.updateTodo(updatedEntity)
@@ -57,10 +68,14 @@ class TodosRepositoryImpl @Inject constructor(
         return response
     }
 
-    override suspend fun deleteTodo(todoId: Int): NetworkResult<TodoDto> {
-        val response = safeCall { todoApi.deleteTodo(todoId) }
+    override suspend fun deleteTodo(todo: Todo): NetworkResult<TodoDto> {
+        if (todo.isLocal) {
+            todoDao.deleteTodo(todo.id)
+            return NetworkResult.Success(todo.toDto())
+        }
+        val response = safeCall { todoApi.deleteTodo(todo.id) }
         if (response is NetworkResult.Success) {
-            todoDao.deleteTodo(todoId)
+            todoDao.deleteTodo(todo.id)
         }
         return response
     }
@@ -78,10 +93,15 @@ class TodosRepositoryImpl @Inject constructor(
             todoDao.getTodoById(id) ?: return NetworkResult.Error("Couldn't find todo with id: $id")
 
         val newStatus = !todo.completed
+        val updatedTodo = todo.copy(completed = newStatus)
+
+        if (todo.isLocal) {
+            todoDao.updateTodo(updatedTodo)
+            return NetworkResult.Success(data = updatedTodo.toDto())
+        }
         val response = safeCall { todoApi.updateTodo(id, mapOf("completed" to newStatus)) }
         if (response is NetworkResult.Success) {
-            val updatedTodo = todo.copy(completed = newStatus)
-            todoDao.updateTodo(updatedTodo)
+            todoDao.updateTodo(todo)
             NetworkResult.Success(data = updatedTodo.toDto())
         }
         return response

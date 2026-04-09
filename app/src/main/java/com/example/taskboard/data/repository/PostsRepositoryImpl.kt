@@ -2,11 +2,14 @@ package com.example.taskboard.data.repository
 
 import com.example.taskboard.data.local.dao.PostDao
 import com.example.taskboard.data.local.entity.PostEntity
+import com.example.taskboard.data.mapper.toDto
 import com.example.taskboard.data.mapper.toEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.data.remote.api.PostApi
 import com.example.taskboard.data.remote.dto.PostDto
 import com.example.taskboard.data.remote.response.PostResponse
+import com.example.taskboard.domain.mapper.toDto
+import com.example.taskboard.domain.model.Post
 import com.example.taskboard.domain.repository.PostsRepository
 import com.example.taskboard.presentation.common.getCurrentDate
 import kotlinx.coroutines.flow.Flow
@@ -38,12 +41,21 @@ class PostsRepositoryImpl @Inject constructor(
     override suspend fun getPostById(id: Int): PostEntity? = postDao.getPostById(id)
 
     override suspend fun updatePost(id: Int, body: Map<String, Any>): NetworkResult<PostDto> {
+        val existingPost = postDao.getPostById(id) ?: return NetworkResult.Error("Couldn't find post with id $id")
+        if (existingPost.isLocal) {
+            val updatedLocalEntity = existingPost.copy(
+                title = body["title"] as? String ?: existingPost.title,
+                body = body["body"] as? String ?: existingPost.body,
+                tags = (body["tags"] as? List<*>)?.filterIsInstance<String>() ?: existingPost.tags,
+                updatedAt = getCurrentDate()
+            )
+
+            postDao.updatePost(updatedLocalEntity)
+            return NetworkResult.Success(updatedLocalEntity.toDto())
+        }
         val response = safeCall { postApi.updatePost(id, body) }
         if (response is NetworkResult.Success) {
-            val existingPost = postDao.getPostById(id)
-            val isLocal = existingPost?.isLocal ?: false
             val updatedEntity = response.data.toEntity().copy(
-                isLocal = isLocal,
                 updatedAt = getCurrentDate()
             )
             postDao.updatePost(updatedEntity)
@@ -51,10 +63,14 @@ class PostsRepositoryImpl @Inject constructor(
         return response
     }
 
-    override suspend fun deletePost(postId: Int): NetworkResult<PostDto> {
-        val response = safeCall { postApi.deletePost(postId) }
+    override suspend fun deletePost(post: Post): NetworkResult<PostDto> {
+        if (post.isLocal) {
+            postDao.deletePost(post.id)
+            return NetworkResult.Success(post.toDto())
+        }
+        val response = safeCall { postApi.deletePost(post.id) }
         if (response is NetworkResult.Success) {
-            postDao.deletePost(postId)
+            postDao.deletePost(post.id)
         }
         return response
     }
