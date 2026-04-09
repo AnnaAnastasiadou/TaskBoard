@@ -101,7 +101,7 @@ class TodosRepositoryImpl @Inject constructor(
         }
         val response = safeCall { todoApi.updateTodo(id, mapOf("completed" to newStatus)) }
         if (response is NetworkResult.Success) {
-            todoDao.updateTodo(todo)
+            todoDao.updateTodo(updatedTodo)
             NetworkResult.Success(data = updatedTodo.toDto())
         }
         return response
