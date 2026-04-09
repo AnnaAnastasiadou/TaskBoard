@@ -7,6 +7,7 @@ import com.example.taskboard.data.mapper.toEntity
 import com.example.taskboard.data.remote.NetworkResult
 import com.example.taskboard.data.remote.api.TodoApi
 import com.example.taskboard.data.remote.dto.TodoDto
+import com.example.taskboard.data.remote.response.PostResponse
 import com.example.taskboard.data.remote.response.TodoResponse
 import com.example.taskboard.domain.repository.TodosRepository
 import com.example.taskboard.presentation.common.getCurrentDate
@@ -16,12 +17,24 @@ import javax.inject.Inject
 class TodosRepositoryImpl @Inject constructor(
     private val todoApi: TodoApi, private val todoDao: TodoDao
 ) : TodosRepository {
+    private var totalTodosOnServer: Int? = null
     override fun observeLocalTodos(): Flow<List<TodoEntity>> = todoDao.observeLocalTodos()
     override fun observeRemoteTodos(): Flow<List<TodoEntity>> = todoDao.observeRemoteTodos()
 
     override suspend fun refreshAllTodos(limit: Int, skip: Int): NetworkResult<TodoResponse> {
+        print(totalTodosOnServer)
+        println(skip)
+        if (totalTodosOnServer != null && skip >= totalTodosOnServer!!) {
+            return NetworkResult.Success(TodoResponse(
+                todos = emptyList(),
+                total = totalTodosOnServer!!,
+                skip = skip,
+                limit = limit
+            ))
+        }
         val result = safeCall { todoApi.getTodos(limit, skip) }
         if (result is NetworkResult.Success) {
+            totalTodosOnServer = result.data.total
             todoDao.insertTodos(result.data.todos.map { it.toEntity() })
         }
         return result

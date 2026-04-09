@@ -15,11 +15,21 @@ import javax.inject.Inject
 class PostsRepositoryImpl @Inject constructor(
     private val postApi: PostApi, private val postDao: PostDao
 ) : PostsRepository {
+    private var totalPostsOnServer: Int? = null
     override fun observeLocalPosts(): Flow<List<PostEntity>> = postDao.observeLocalPosts()
     override fun observeRemotePosts(): Flow<List<PostEntity>> = postDao.observeRemotePosts()
     override suspend fun refreshPosts(limit: Int, skip: Int): NetworkResult<PostResponse> {
+        if (totalPostsOnServer != null && skip >= totalPostsOnServer!!) {
+            return NetworkResult.Success(PostResponse(
+                posts = emptyList(),
+                total = totalPostsOnServer!!,
+                skip = skip,
+                limit = limit
+            ))
+        }
         val result = safeCall { postApi.getPosts(limit, skip) }
         if (result is NetworkResult.Success) {
+            totalPostsOnServer = result.data.total
             postDao.insertPosts(result.data.posts.map { it.toEntity() })
         }
         return result
