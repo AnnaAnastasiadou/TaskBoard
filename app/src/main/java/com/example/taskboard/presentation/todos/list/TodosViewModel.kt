@@ -37,7 +37,7 @@ class TodosViewModel @Inject constructor(
     private var currentSkip = 0
     private var pageSize = 30
     private var isFetching = false
-    private var totalItems: Int? = null
+    private var apiTotal: Int? = null
 
     private val _uiState = MutableStateFlow(TodosUiState())
     val uiState = _uiState.asStateFlow()
@@ -93,8 +93,8 @@ class TodosViewModel @Inject constructor(
                             networkError = null
                         )
                     }
-                    if (totalItems == null) {
-                        totalItems = result.data.total
+                    if (apiTotal == null) {
+                        apiTotal = result.data.total
                     }
                 }
 
@@ -130,12 +130,12 @@ class TodosViewModel @Inject constructor(
     }
 
     fun onScrollReachedIndex(index: Int) {
-        if (totalItems == null) return
+        if (apiTotal == null) return
         val hasError = uiState.value.error != null || uiState.value.networkError != null
 
         val localItems = uiState.value.localData?.size ?: 0
         val remoteItems = uiState.value.remoteData?.size ?: 0
-        val hasNext = totalItems!! > (localItems + remoteItems)
+        val hasNext = apiTotal!! >  remoteItems
         val localHeader = if (localItems != 0) 1 else 0
         val remoteHeader = if (remoteItems != 0) 1 else 0
         val totalItems = localItems + remoteItems + localHeader + remoteHeader

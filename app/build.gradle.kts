@@ -63,4 +63,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.coil.kt)
     implementation(libs.google.flexbox)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
 }
