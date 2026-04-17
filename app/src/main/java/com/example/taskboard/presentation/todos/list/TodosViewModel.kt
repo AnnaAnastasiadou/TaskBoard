@@ -79,43 +79,44 @@ class TodosViewModel @Inject constructor(
 
     fun loadNextBatch() {
         if (isFetching) return
+        isFetching = true
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            isFetching = true
+            try {
+                when (val result = todosRepository.refreshAllTodos(30, currentSkip)) {
+                    is NetworkResult.Success -> {
+                        currentSkip += pageSize
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = null,
+                                networkError = null
+                            )
+                        }
+                        if (apiTotal == null) {
+                            apiTotal = result.data.total
+                        }
+                    }
 
-            when (val result = todosRepository.refreshAllTodos(30, currentSkip)) {
-                is NetworkResult.Success -> {
-                    currentSkip += pageSize
-                    _uiState.update {
+                    is NetworkResult.Error -> _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = null,
+                            error = result.message,
                             networkError = null
                         )
                     }
-                    if (apiTotal == null) {
-                        apiTotal = result.data.total
+
+                    is NetworkResult.NetworkError -> _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                            networkError = result.message
+                        )
                     }
                 }
-
-                is NetworkResult.Error -> _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = result.message,
-                        networkError = null
-                    )
-                }
-
-                is NetworkResult.NetworkError -> _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = null,
-                        networkError = result.message
-                    )
-                }
+            } finally {
+                isFetching = false
             }
-            isFetching = false
-
         }
     }
 
@@ -135,7 +136,7 @@ class TodosViewModel @Inject constructor(
 
         val localItems = uiState.value.localData?.size ?: 0
         val remoteItems = uiState.value.remoteData?.size ?: 0
-        val hasNext = apiTotal!! >  remoteItems
+        val hasNext = apiTotal!! > remoteItems
         val localHeader = if (localItems != 0) 1 else 0
         val remoteHeader = if (remoteItems != 0) 1 else 0
         val totalItems = localItems + remoteItems + localHeader + remoteHeader
